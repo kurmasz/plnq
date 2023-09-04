@@ -1,0 +1,24 @@
+{
+    "uuid": "84BCDA89-7BD9-41D6-8426-2AFA9D9A4985",
+    "title": "Learning Target: Template",
+    "topic": "quiz-target",
+    "tags": ["template","kurmas"],
+    "type": "v3",
+    "singleVariant": true,
+    "gradingMethod": "External",
+    "workspaceOptions": {
+        "image": "prairielearn/workspace-jupyterlab",
+        "port": 8080,
+        "home": "/home/jovyan",
+        "rewriteUrl": false,
+        "gradedFiles": [
+            "learning_target.ipynb"
+        ]
+    },
+    "externalGradingOptions": {
+        "enabled": true,
+        "image": "prairielearn/grader-python",
+        "entrypoint": "/python_autograder/run.sh",
+        "timeout": 20
+    }
+}
