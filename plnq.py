@@ -10,6 +10,7 @@ import argparse
 import json
 from pathlib import Path
 import os
+import shutil
 import uuid
 
 # Here is an idea:When you refer to the template files,
@@ -82,6 +83,27 @@ print(description)
 #  * rename/move the existing directory
 #  * destroy/replace the existing directory
 #  * Just put new files on top of the existing directory
+
+if (Path(output_dir_name)).exists():
+    print(f"Output path {output_dir_name} exists. Do you want to")
+    print("  (Q) quit")
+    print("  (D) destroy the current directory and replace it with the newly generated question")
+    print("  (M) move the current directory to a backup location")
+
+    choice = input().upper()
+    if choice.startswith('Q'):
+        print('Good bye')
+        exit()
+    elif choice.startswith('D'):
+        if output_dir_name != '/':
+            shutil.rmtree(output_dir_name)
+    elif choice.startswith('M'):
+        print("Not implemented yet.")
+        exit()
+    else:
+        print(f"Don't recognize option '{choice}'")
+        exit()
+
 Path(output_dir_name).mkdir(parents=False, exist_ok=False)
 
 
@@ -120,8 +142,81 @@ func_desc = description["exported_function"]["description"]
 
 server_file = open(f"{template_dir_name}/server.py", "r")
 server_file_contents = server_file.read()
-new_server_file_contents = server_file_contents.replace('zzFUNC_NAMEzz','a' ).replace('zzFUNC_DESCzz', 'b')
+
+f_name = description['exported_function']['name']
+update1 = server_file_contents.replace('zzFUNC_NAMEzz',f_name)
+
+f_description = description['exported_function']['description']
+update2 = update1.replace('zzFUNC_DESCzz', f_description)
 
 output_server_file = open(f"{output_dir_name}/server.py", "w")
-output_server_file.write(new_server_file_contents)
+output_server_file.write(update2)
 output_question_file.close()
+
+#
+# workspace
+#
+
+Path(f"{output_dir_name}/workspace").mkdir(parents=False, exist_ok=False)
+shutil.copy(f"{template_dir_name}/workspace/playspace.ipynb", f"{output_dir_name}/workspace")
+
+lt_file = open(f"{template_dir_name}/workspace/learning_target.ipynb", "r")
+learning_target = json.load(lt_file)
+
+#TODO Verify that this is markdown
+
+title_line = ("#" + description["info"]["title"] + "\n\n")
+text_block = [title_line] + description_json['cells'][1]['source']
+
+# find method signature and extract
+#for line in text_block:
+ #   /write a function `(.*)`/
+
+
+
+#TODO !!!!! Put in the examples !!!!
+
+learning_target['cells'][0]['source'] = text_block
+
+source_text =  ["#grade IMPORTANT: Do not remove or modify this line\n"]
+source_text += ['def the_function(a,b,c):\n']
+source_text += ['    pass']
+
+learning_target['cells'][1]['source'] = source_text
+
+output_lt_file = open(f"{output_dir_name}/workspace/learning_target.ipynb", "w")
+json.dump(learning_target, output_lt_file, indent=2)
+output_lt_file.close()
+
+
+#
+# tests
+#
+Path(f"{output_dir_name}/tests").mkdir(parents=False, exist_ok=False)
+shutil.copy(f"{template_dir_name}/tests/ans.py", f"{output_dir_name}/tests")
+shutil.copy(f"{template_dir_name}/tests/initial_code.py", f"{output_dir_name}/tests")
+shutil.copy(f"{template_dir_name}/tests/setup_code.py", f"{output_dir_name}/tests")
+
+test_code_template_file = open(f"{template_dir_name}/tests/test.py", "r")
+test_code = test_code_template_file.read()
+
+test_code += f"\n    student_code_file = 'learning_target.ipynb'\n\n"
+
+all_tests = description['displayed_examples'] + description['test_cases']
+
+test_num = 1
+for test in all_tests:
+    num_params = len(test) - 1
+    expected = test[num_params]
+    params = json.dumps(test[:num_params])
+
+    test_code += f'    @points(1)\n'
+    test_code += f'    @name("test {test_num}")\n'
+    test_code += f'    def test_{test_num}(self):\n'
+    test_code += f"        self.verify('{f_name}', {expected}, '{params}')\n"
+    test_code += '\n'
+
+    test_num += 1
+
+output_test_file = open(f"{output_dir_name}/tests/test.py", "w")
+output_test_file.write(test_code)
