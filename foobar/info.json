@@ -1,0 +1,27 @@
+{
+  "uuid": "35b58507-1b9e-4a84-9a59-b091a9e404cb",
+  "title": "Conditionals (compound conditions)",
+  "topic": "conditionals",
+  "tags": [
+    "conditionals",
+    "f23"
+  ],
+  "type": "v3",
+  "singleVariant": true,
+  "gradingMethod": "External",
+  "workspaceOptions": {
+    "image": "prairielearn/workspace-jupyterlab",
+    "port": 8080,
+    "home": "/home/jovyan",
+    "rewriteUrl": false,
+    "gradedFiles": [
+      "learning_target.ipynb"
+    ]
+  },
+  "externalGradingOptions": {
+    "enabled": true,
+    "image": "prairielearn/grader-python",
+    "entrypoint": "/python_autograder/run.sh",
+    "timeout": 20
+  }
+}
