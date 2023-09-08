@@ -200,7 +200,7 @@ shutil.copy(f"{template_dir_name}/tests/setup_code.py", f"{output_dir_name}/test
 test_code_template_file = open(f"{template_dir_name}/tests/test.py", "r")
 test_code = test_code_template_file.read()
 
-test_code += f"\n    student_code_file = 'learning_target.ipynb'\n\n"
+# test_code += f"\n  student_code_file = 'learning_target.ipynb'\n\n"
 
 all_tests = description['displayed_examples'] + description['test_cases']
 
@@ -210,10 +210,10 @@ for test in all_tests:
     expected = test[num_params]
     params = json.dumps(test[:num_params])
 
-    test_code += f'    @points(1)\n'
-    test_code += f'    @name("test {test_num}")\n'
-    test_code += f'    def test_{test_num}(self):\n'
-    test_code += f"        self.verify('{f_name}', {expected}, '{params}')\n"
+    test_code += f'  @points(1)\n'
+    test_code += f'  @name("test {test_num}")\n'
+    test_code += f'  def test_{test_num}(self):\n'
+    test_code += f"      self.verify('{f_name}', {expected}, '{params}')\n"
     test_code += '\n'
 
     test_num += 1
