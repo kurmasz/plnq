@@ -12,6 +12,7 @@ from pathlib import Path
 import os
 import shutil
 import uuid
+import re
 
 # Here is an idea:When you refer to the template files,
 # Assume the template directory is in the same directory
@@ -19,34 +20,44 @@ import uuid
 
 # https://docs.python.org/3/library/argparse.html
 
-
 #
 # Startup / argument parsing
 #
-
 
 parser = argparse.ArgumentParser(prog='plnq',
                     description='Generates PrairieLearn quiz questions')
 parser.add_argument('-v', '--verbose', action='store_true') 
 parser.add_argument('description', metavar='filename', type=str, nargs=1,
                     help='the problem description file')
-parser.add_argument('output_dir', metavar='dir_name', type=str, nargs=1,
-                    help='the output directory')
+parser.add_argument('output_dir', metavar='dir_name', type=str, nargs='?',
+                    help='the output directory', default='./-')
 #TODO Add an optional argument --template-dir that specifies the location of the template files
 # info.json, test.py, etc. 
 
 args = parser.parse_args()
 
 description_file_name = args.description[0]
-output_dir_name = args.output_dir[0]
+output_dir_name = args.output_dir
 template_dir_name = os.path.dirname(__file__) + "/quiz_template"
 
-#TODO Make sure file exists, is a file, and is readable, or complain and quit.
+print(output_dir_name)
+if output_dir_name.endswith('/-'):
+    if '/' in description_file_name:
+        # TODO: This should probably be replaced with a path library
+        # so that it works on windows (with it's \ instead of /)
+        parts = re.findall("\/([^\/]+).ipynb$", description_file_name)
+        # TODO: Make sure there is a match
+        basename = parts[0]
+    else:
+        parts = re.findall("^(.+).ipynb$", description_file_name)
+         # TODO: Make sure there is a match
+        basename = parts[0]
+    output_dir_name = re.sub("\/-$", f'/{basename}', output_dir_name)
 
+#TODO Make sure file exists, is a file, and is readable, or complain and quit.
 print(f"Making quiz question from {description_file_name}")
 print(f"Placing output in {output_dir_name}")
 print(f"Template files located {template_dir_name}")
-
 
 #
 # Load description
@@ -165,21 +176,45 @@ learning_target = json.load(lt_file)
 
 #TODO Verify that this is markdown
 
-title_line = ("#" + description["info"]["title"] + "\n\n")
+title_line = "" # ("# " + description["info"]["title"] + "\n\n")
 text_block = [title_line] + description_json['cells'][1]['source']
 
 # find method signature and extract
-#for line in text_block:
- #   /write a function `(.*)`/
+methods = []
+for index, line in enumerate(text_block):
+   matches = re.findall("!!!`([^`]+)`!!!", line)
+   methods += matches
+   if (len(matches) > 0):
+       text_block[index] = re.sub("!!!", "", line)
 
+if len(methods) > 1:
+    print("ERROR: Found more than one marked method signature:", methods)
+elif len(methods) == 0:
+    print("WARNING: Did not find a method signature. Using a generic 'your_function'")
+    methods = ["your_function()"]
 
+method_signature = methods[0]
+possible_names = re.findall("^([^(]+)\(", method_signature)
+if (len(possible_names) != 1):
+    print(f"ERROR: Expected exactly 1 name in {method_signature}.  Found {possible_names}")
+method_name = possible_names[0]
 
-#TODO !!!!! Put in the examples !!!!
+if 'displayed_examples' in description and len(description['displayed_examples']) > 0:
+  text_block += ["\n"]
+  text_block += ["For example:\n"]
+  for example in description['displayed_examples']:
+      num_params = len(example) - 1
+      params = json.dumps(example[:num_params])[1:-1]
+      params = params.replace("true,", "True,")
+      params = params.replace("false,", "False,")
+      answer = example[num_params]
+      text_block += [f"  * `{method_name}({params})` should return `{answer}`\n"] 
+
 
 learning_target['cells'][0]['source'] = text_block
 
 source_text =  ["#grade IMPORTANT: Do not remove or modify this line\n"]
-source_text += ['def the_function(a,b,c):\n']
+source_text += [f'def {methods[0]}:\n']
 source_text += ['    pass']
 
 learning_target['cells'][1]['source'] = source_text
@@ -187,7 +222,6 @@ learning_target['cells'][1]['source'] = source_text
 output_lt_file = open(f"{output_dir_name}/workspace/learning_target.ipynb", "w")
 json.dump(learning_target, output_lt_file, indent=2)
 output_lt_file.close()
-
 
 #
 # tests
@@ -199,7 +233,7 @@ shutil.copy(f"{template_dir_name}/tests/setup_code.py", f"{output_dir_name}/test
 
 test_code_template_file = open(f"{template_dir_name}/tests/test.py", "r")
 test_code = test_code_template_file.read()
-
+test_code += '\n'  # Blank line in case the we loose the newline at the end of the template test.py
 # test_code += f"\n  student_code_file = 'learning_target.ipynb'\n\n"
 
 all_tests = description['displayed_examples'] + description['test_cases']
