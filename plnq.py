@@ -76,8 +76,8 @@ description_globals = {}
 description = {}
 exec("".join(data_block), description_globals, description)
 
-print("Description:")
-print(description)
+# print("Description:")
+# print(description)
 
 ##########################################################
 #
@@ -238,19 +238,39 @@ test_code += '\n'  # Blank line in case the we loose the newline at the end of t
 
 all_tests = description['displayed_examples'] + description['test_cases']
 
-test_num = 1
-for test in all_tests:
+
+for index, test in enumerate(all_tests):
     num_params = len(test) - 1
     expected = test[num_params]
     params = json.dumps(test[:num_params])
 
     test_code += f'  @points(1)\n'
-    test_code += f'  @name("test {test_num}")\n'
-    test_code += f'  def test_{test_num}(self):\n'
+    test_code += f'  @name("test {index + 1}")\n'
+    test_code += f'  def test_{(index + 1):02d}(self):\n'  # Using a leading 0 ensures they run in numeric order 
     test_code += f"      self.verify('{f_name}', {expected}, '{params}')\n"
     test_code += '\n'
 
-    test_num += 1
-
 output_test_file = open(f"{output_dir_name}/tests/test.py", "w")
 output_test_file.write(test_code)
+
+
+#
+# Verify correctness of test cases
+#
+# Make sure the reference solution produces the same answer as the test cases!
+
+answer_block = description_json['cells'][2]['source']
+answer_globals = {}
+answer = {}
+exec("".join(answer_block), answer_globals, answer)
+
+#TODO: Check for 3rd block.
+# Make sure it is a code block.
+# Make sure it contains a correctly-named function.
+
+for index, test in enumerate(all_tests):
+    num_params = len(test) - 1
+    given_answer = test[num_params]
+    computed_answer = answer[f_name](*test[:num_params])
+    if (given_answer != computed_answer):
+        print(f"!!! Test {index}: Given answer {given_answer} differs from computed answer {computed_answer}")
