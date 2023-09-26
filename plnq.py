@@ -242,6 +242,8 @@ all_tests = description['displayed_examples'] + description['test_cases']
 for index, test in enumerate(all_tests):
     num_params = len(test) - 1
     expected = test[num_params]
+    if isinstance(expected, str):
+        expected = f"'{expected}'"
     params = json.dumps(test[:num_params])
 
     test_code += f'  @points(1)\n'
