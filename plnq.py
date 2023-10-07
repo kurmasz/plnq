@@ -156,21 +156,27 @@ output_question_file.close()
 # server.py
 #
 
-# name/description set to first problem (temporary)
-func_name = description["exported_function"][0]["name"]
-func_desc = description["exported_function"][0]["description"]
-
 server_file = open(f"{template_dir_name}/server.py", "r")
 server_file_contents = server_file.read()
 
-f_name = description['exported_function'][0]['name']
-update1 = server_file_contents.replace('zzFUNC_NAMEzz',f_name)
+functions = []
+for function in description['exported_function']:
+    func_name = function['name']
+    func_desc = function['description']
 
-f_description = description['exported_function'][0]['description']
-update2 = update1.replace('zzFUNC_DESCzz', f_description)
+    func_data = {
+        "name": func_name,
+        "description": func_desc,
+        "type": "function"
+    }
+
+    functions.append(func_data)
+
+functions_json = json.dumps(functions, indent=2)
+update = server_file_contents.replace('\'zzFUNC_INFOzz\'', functions_json)
 
 output_server_file = open(f"{output_dir_name}/server.py", "w")
-output_server_file.write(update2)
+output_server_file.write(update)
 output_question_file.close()
 
 
@@ -269,7 +275,7 @@ for function in description['exported_function']:
     func_name = function['name']
     all_tests = description['displayed_examples'][func_name] + description['test_cases'][func_name]
 
-    for test in enumerate(all_tests):
+    for test in (all_tests):
         num_params = len(test) - 1
         expected = test[num_params]
         if isinstance(expected, str):
@@ -279,7 +285,7 @@ for function in description['exported_function']:
         test_code += f'  @points(1)\n'
         test_code += f'  @name("test {i + 1}")\n'
         test_code += f'  def test_{(i + 1):02d}(self):\n'  # Using a leading 0 ensures they run in numeric order 
-        test_code += f"      self.verify('{func_name}', {expected[1]}, '{params}')\n"
+        test_code += f"      self.verify('{func_name}', {expected}, '{params}')\n"
         test_code += '\n'
 
         i += 1
