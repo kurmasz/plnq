@@ -13,6 +13,15 @@ import os
 import shutil
 import uuid
 import re
+import math
+
+
+def compare(item1, item2):
+    if isinstance(item1, float):
+        print(f"{item1} -- {item2} -- {item2 - item1}")
+        return math.isclose(item1, item2)
+    else:
+        return item1 == item2
 
 # Here is an idea:When you refer to the template files,
 # Assume the template directory is in the same directory
@@ -238,7 +247,6 @@ test_code += '\n'  # Blank line in case the we loose the newline at the end of t
 
 all_tests = description['displayed_examples'] + description['test_cases']
 
-
 for index, test in enumerate(all_tests):
     num_params = len(test) - 1
     expected = test[num_params]
@@ -274,5 +282,5 @@ for index, test in enumerate(all_tests):
     num_params = len(test) - 1
     given_answer = test[num_params]
     computed_answer = answer[f_name](*test[:num_params])
-    if (given_answer != computed_answer):
+    if (not (given_answer, computed_answer)):
         print(f"!!! Test {index}: Given answer {given_answer} differs from computed answer {computed_answer}")
