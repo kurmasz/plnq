@@ -279,7 +279,7 @@ for function in description['exported_function']:
         test_code += f'  @points(1)\n'
         test_code += f'  @name("test {i + 1}")\n'
         test_code += f'  def test_{(i + 1):02d}(self):\n'  # Using a leading 0 ensures they run in numeric order 
-        test_code += f"      self.verify('{func_name}', {expected}, '{params}')\n"
+        test_code += f"      self.verify('{func_name}', {expected[1]}, '{params}')\n"
         test_code += '\n'
 
         i += 1
