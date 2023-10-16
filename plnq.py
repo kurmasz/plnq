@@ -13,12 +13,17 @@ import os
 import shutil
 import uuid
 import re
+import sys
 
 # Here is an idea:When you refer to the template files,
 # Assume the template directory is in the same directory
 # as this file. That way the setup can be run from anywhere.
 
 # https://docs.python.org/3/library/argparse.html
+
+def is_directory_protected(directory):
+    protected_file_path = os.path.join(directory, "do_not_overwrite") 
+    return os.path.exists(protected_file_path)
 
 #
 # Startup / argument parsing
@@ -53,6 +58,10 @@ if output_dir_name.endswith('/-'):
          # TODO: Make sure there is a match
         basename = parts[0]
     output_dir_name = re.sub("\/-$", f'/{basename}', output_dir_name)
+
+if is_directory_protected(output_dir_name):
+    print("Cannot write to output directory because it contains a 'do_not_overwrite' file.")
+    sys.exit(1)
 
 #TODO Make sure file exists, is a file, and is readable, or complain and quit.
 print(f"Making quiz question from {description_file_name}")
