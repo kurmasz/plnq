@@ -279,11 +279,11 @@ test_code = test_code_template_file.read()
 test_code += '\n'  # Blank line in case the we loose the newline at the end of the template test.py
 # test_code += f"\n  student_code_file = 'learning_target.ipynb'\n\n"
 
-i = 0
 for function in description['exported_function']:
     func_name = function['name']
     all_tests = description['displayed_examples'][func_name] + description['test_cases'][func_name]
 
+    i = 1
     for test in (all_tests):
         num_params = len(test) - 1
         expected = test[num_params]
@@ -292,7 +292,7 @@ for function in description['exported_function']:
         params = json.dumps(test[:num_params])
 
         test_code += f'  @points(1)\n'
-        test_code += f'  @name("test {i + 1}")\n'
+        test_code += f'  @name("{func_name} test {i}")\n'
         test_code += f'  def test_{(i + 1):02d}(self):\n'  # Using a leading 0 ensures they run in numeric order 
         test_code += f"      self.verify('{func_name}', {expected}, '{params}')\n"
         test_code += '\n'
