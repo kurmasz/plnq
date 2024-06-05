@@ -13,7 +13,6 @@ import os
 import uuid
 import re
 import sys
-import math
 import shutil
 
 from quiz_template.tests.answer import Answer, FloatAnswer
@@ -56,7 +55,7 @@ def destroy_existing_target(directory):
 parser = argparse.ArgumentParser(prog='plnq',
                     description='Generates PrairieLearn quiz questions')
 parser.add_argument('-v', '--verbose', action='store_true') 
-parser.add_argument('--destroy', action='store_true')
+parser.add_argument('--destroy', action='store_true', help='overwrite the contents of the output directory (if present)')
 parser.add_argument('description', metavar='filename', type=str, nargs=1,
                     help='the problem description file')
 parser.add_argument('output_dir', metavar='dir_name', type=str, nargs='?',
