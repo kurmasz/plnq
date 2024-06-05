@@ -28,10 +28,13 @@ The output directory is the name of the directory into which the assignment will
 
 ## Template configuration
 
-A template is just an `.ipynb` file. The first block is a code block containing several dictionaries:
+A template is just an `.ipynb` file. 
 
-* `info` contains data placed in `info.json` including: `title`, `topics`, and `tags`
+### First Block
 
+The first block is a code block containing several dictionaries:
+
+`info` contains data placed in `info.json` including: `title`, `topics`, and `tags`
 ```
 info = {
     "title": "Writing Functions",
@@ -41,8 +44,7 @@ info = {
 ```
 
 
-* `exported_functions` is used to set up `names_from_user` in `server.py`. This shows the list of functions that the students are to write (and causes them to be exported to the automated testing.)
-
+`exported_functions` is used to set up `names_from_user` in `server.py`. This shows the list of functions that the students are to write (and causes them to be exported to the automated testing.)
 ```
 exported_functions = [
     {
@@ -55,6 +57,43 @@ exported_functions = [
     }
 ]
 ```
+
+`displayed_examples` lists the input and expected output for examples that are displayed to the user.  For example
+```
+displayed_examples = {
+    'area_of_triangle': [
+        [1, 1, 1, math.sqrt(3)/4],
+        [3, 4, 5, 6]
+    ],
+    'sum_four_digits': [
+        [1111, 4],
+        [1234, 10]
+    ]
+}
+```
+generates lines like this: `area_of_triangle(3, 4, 5)` should return `6`
+
+
+`test_cases` lists the input and expected output for automated tests that are not shown to the students.  It has the same format as `displayed_examples`.
+
+
+### Task Description Block  
+
+After the initial metadata block, the remaining blocks describe the specific tasks. Each task requires two blocks 
+  1. A Markdown block containing instructions, and 
+  2. A code block containing the solution.
+
+For the mot part, the Markdown block simply contains the text the students read. `plnq` automatically adds the sample input/output to the end of this block.
+
+**Important:** This block should contain the function's signature somewhere delineated with `!!!`. (`plnq` uses this to build the sample input/output.)
+
+```
+# Task 1
+
+Write a function !!!`area_of_triangle(a, b, c)`!!! That uses [Heron's Formula](https://en.wikipedia.org/wiki/Heron%27s_formula) to calculate the area of the triangle with side lengths `a`, `b`, and `c`
+```
+
+
 
 
 ## Notes:
