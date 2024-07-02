@@ -3,7 +3,11 @@ from pl_helpers import name, points, not_repeated
 from code_feedback import Feedback
 from pl_unit_test import PLTestCaseWithPlot, PLTestCase
 import json
+
+# These imports are needed because the test generation code from the template may use them.
+# (TODO: Is there a way to get the template to provide any necessary import statements?)
 import math
+import re
 
 import answer
 

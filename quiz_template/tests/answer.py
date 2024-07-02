@@ -5,7 +5,7 @@
 ############################################################
 import math
 import inspect
-import json
+import re
 
 class Answer:
     def __init__(self, expected, strict=True):
@@ -24,13 +24,16 @@ class Answer:
     def verify_value(self, observed):
         if self.expected == observed:
             return True
-        self.message_content = f'Expected {self.expected}, but received {observed}'
+        if type(self.expected == str) or type(observed) == str:
+            self.message_content = f'Expected "{self.expected}", but received "{observed}"'
+        else:
+            self.message_content = f'Expected {self.expected}, but received {observed}'
         return False
 
     def verify(self, observed):
         if self.strict and not self.verify_type(observed):
             return False
-        return self.verify(observed)
+        return self.verify_value(observed)
         
     def message(self):
         return self.message_content
@@ -40,6 +43,8 @@ class Answer:
             return expected
         if isinstance(expected, float):
             return FloatAnswer(expected)
+        if isinstance(expected, re.Pattern):
+            return ReAnswer(expected)
         return Answer(expected)
     
     def value_to_literal(value):
@@ -63,8 +68,28 @@ class FloatAnswer(Answer):
         self.rel_tol = rel_tol
         self.abs_tol = abs_tol
 
-    def verify(self, observed):
+    def verify_value(self, observed):
         if math.isclose(self.expected, observed, rel_tol=self.rel_tol, abs_tol=self.abs_tol):
             return True
         self.message_content = f'Expected {self.expected}, but received {observed}'
         return False
+
+class ReAnswer(Answer):
+    def __init__(self, expected):
+        if isinstance(expected, str):
+            super().__init__(re.compile(expected), strict=True)
+        else:
+            super().__init__(expected, strict=True)
+
+    def verify_type(self, observed):
+        if type(observed) != str:
+            self.message_content = f'Expected object of type {type("str")}, but received {type(observed)}'
+            return False
+        return True
+
+    def verify_value(self, observed):
+        if self.expected.search(observed):
+            return True
+        self.message_content = f'Expected {observed} to match {self.expected}'
+        return False
+    

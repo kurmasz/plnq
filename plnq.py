@@ -15,7 +15,7 @@ import re
 import sys
 import shutil
 
-from quiz_template.tests.answer import Answer, FloatAnswer
+from quiz_template.tests.answer import Answer, FloatAnswer, ReAnswer
 
 # Here is an idea:When you refer to the template files,
 # Assume the template directory is in the same directory
@@ -65,9 +65,21 @@ parser.add_argument('output_dir', metavar='dir_name', type=str, nargs='?',
 
 args = parser.parse_args()
 
-description_file_name = args.description[0]
+description_loc = args.description[0]
 output_dir_name = args.output_dir
 template_dir_name = os.path.dirname(__file__) + "/quiz_template"
+
+location_is_dir = os.path.isdir(description_loc)
+if location_is_dir:
+    files = [f for f in os.listdir(description_loc) if f.endswith('.ipynb')]
+    if len(files) == 1:
+        description_file_name = f'{description_loc}/{files[0]}'
+    else:
+        print("Location directories may only contain one .ipynb file.")
+        print("(Otherwise, I don't know which file is the template file.")
+        exit()
+else:
+    description_file_name = False
 
 print(output_dir_name)
 if output_dir_name.endswith('/-'):
@@ -93,6 +105,10 @@ print(f"Making quiz question from {description_file_name}")
 print(f"Placing output in {output_dir_name}")
 print(f"Template files located {template_dir_name}")
 
+other_graded_files = []
+if location_is_dir:
+    description_base_name = os.path.basename(description_file_name)
+    other_graded_files = [f for f in os.listdir(description_loc) if f != description_base_name ]
 
 #
 # Load description
@@ -111,7 +127,7 @@ data_block = description_json['cells'][0]['source']
 
 # Blocks run in their own namespace. We need to specifically inject
 # objects into that namespace, if desired.
-description_globals = {"Answer": Answer, "FloatAnswer": FloatAnswer}
+description_globals = {"Answer": Answer, "FloatAnswer": FloatAnswer, "ReAnswer": ReAnswer}
 description = {}
 exec("".join(data_block), description_globals, description)
 
@@ -168,6 +184,9 @@ info_json['title'] = description["info"]["title"]
 info_json["topic"] = description["info"]["topic"]
 info_json["tags"] = description["info"]["tags"]
 
+for file in other_graded_files:
+    info_json['workspaceOptions']['gradedFiles'].append(file)
+
 output_json_file = open(f"{output_dir_name}/info.json", "w")
 json.dump(info_json, output_json_file, indent=2)
 output_json_file.close()
@@ -218,8 +237,13 @@ output_question_file.close()
 # workspace
 #
 
-Path(f"{output_dir_name}/workspace").mkdir(parents=False, exist_ok=False)
+workspace_pathname = f'{output_dir_name}/workspace' 
+Path(workspace_pathname).mkdir(parents=False, exist_ok=False)
 shutil.copy(f"{template_dir_name}/workspace/playspace.ipynb", f"{output_dir_name}/workspace")
+
+# If template location is a directory, copy any additional files into the workspace
+for file in other_graded_files:
+    shutil.copy(os.path.join(description_loc ,file), workspace_pathname)
 
 lt_file = open(f"{template_dir_name}/workspace/learning_target.ipynb", "r")
 learning_target = json.load(lt_file)
@@ -355,6 +379,11 @@ for function in description['exported_functions']:
 
     func_name = function['name']
     all_tests = description['displayed_examples'][func_name] + description['test_cases'][func_name]
+    
+    # Modify cwd to dir containing data files
+    original_cwd = os.getcwd()
+    description_dir = os.path.dirname(description_file_name)
+    os.chdir(description_dir)
 
     for index, test in enumerate(all_tests):
         num_params = len(test) - 1
@@ -367,3 +396,6 @@ for function in description['exported_functions']:
             print(f"!!! Test {index}: {verifier.message()}")
 
     i += 2
+
+    # Restore original cwd
+    os.chdir(original_cwd)
