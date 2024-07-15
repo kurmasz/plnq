@@ -15,7 +15,7 @@ import re
 import sys
 import shutil
 
-from quiz_template.tests.answer import Answer, FloatAnswer, ReAnswer
+from quiz_template.tests.answer import Answer, FloatAnswer, ReAnswer, InlineAnswer
 
 # Here is an idea:When you refer to the template files,
 # Assume the template directory is in the same directory
@@ -126,7 +126,7 @@ data_block = description_json['cells'][0]['source']
 
 # Blocks run in their own namespace. We need to specifically inject
 # objects into that namespace, if desired.
-description_globals = {"Answer": Answer, "FloatAnswer": FloatAnswer, "ReAnswer": ReAnswer}
+description_globals = {"Answer": Answer, "FloatAnswer": FloatAnswer, "ReAnswer": ReAnswer, "InlineAnswer": InlineAnswer}
 description = {}
 exec("".join(data_block), description_globals, description)
 
@@ -340,14 +340,16 @@ for function in description['exported_functions']:
   
         if isinstance(expected, Answer):            
             expected_str = Answer.make(expected).constructor_string()
+            param_index = expected.param_index
         else:
             expected_str = Answer.value_to_literal(expected)
+            param_index = -1
         params = json.dumps(test[:num_params])
 
         test_code += f'  @points(1)\n'
         test_code += f'  @name("test {i + 1}")\n'
         test_code += f'  def test_{(i + 1):02d}(self):\n'  # Using a leading 0 ensures they run in numeric order 
-        test_code += f"      self.verify('{func_name}', {expected_str}, '{params}')\n"
+        test_code += f"      self.verify('{func_name}', {expected_str}, '{params}', {param_index})\n"
         test_code += '\n'
 
         i += 1
@@ -388,9 +390,15 @@ for function in description['exported_functions']:
     for index, test in enumerate(all_tests):
         num_params = len(test) - 1
         given_answer = test[num_params]
-        computed_answer = answer[func_name](*test[:num_params])
-        
         verifier = Answer.make(given_answer)
+
+        return_value = answer[func_name](*test[:num_params])
+        
+        if verifier.param_index == -1:
+            computed_answer = return_value
+        else:
+            computed_answer = test[verifier.param_index]
+       
 
         if (not verifier.verify(computed_answer)):
             print(f"!!! Test {index}: {verifier.message()}")

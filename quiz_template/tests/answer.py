@@ -8,9 +8,10 @@ import inspect
 import re
 
 class Answer:
-    def __init__(self, expected, strict=True):
+    def __init__(self, expected, strict=True, param_index=-1):
         self.expected = expected
         self.strict = strict
+        self.param_index = param_index
 
     def display_expected(self):
         return self.expected
@@ -95,6 +96,6 @@ class ReAnswer(Answer):
     
 class InlineAnswer(Answer):
     def __init__(self, expected, expected_return_value=None, param_index=0):
-        super().__init(expected, strict=True)
+        super().__init__(expected, strict=True, param_index=param_index)
+        self.expected_return_value = expected_return_value
 
-    
