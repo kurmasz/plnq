@@ -79,9 +79,8 @@ if location_is_dir:
         print("(Otherwise, I don't know which file is the template file.")
         exit()
 else:
-    description_file_name = False
+    description_file_name = description_loc
 
-print(output_dir_name)
 if output_dir_name.endswith('/-'):
     if '/' in description_file_name:
         # TODO: This should probably be replaced with a path library
@@ -383,7 +382,8 @@ for function in description['exported_functions']:
     # Modify cwd to dir containing data files
     original_cwd = os.getcwd()
     description_dir = os.path.dirname(description_file_name)
-    os.chdir(description_dir)
+    if len(description_dir) > 0:
+       os.chdir(description_dir)
 
     for index, test in enumerate(all_tests):
         num_params = len(test) - 1

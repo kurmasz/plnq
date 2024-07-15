@@ -93,3 +93,8 @@ class ReAnswer(Answer):
         self.message_content = f'Expected {observed} to match {self.expected}'
         return False
     
+class InlineAnswer(Answer):
+    def __init__(self, expected, expected_return_value=None, param_index=0):
+        super().__init(expected, strict=True)
+
+    
