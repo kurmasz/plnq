@@ -392,6 +392,7 @@ for function in description['exported_functions']:
         given_answer = test[num_params]
         verifier = Answer.make(given_answer)
 
+        # print(f'Test: {index} --- {test} -- {num_params}')
         return_value = answer[func_name](*test[:num_params])
         
         if verifier.param_index == -1:
