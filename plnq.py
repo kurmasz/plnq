@@ -127,11 +127,14 @@ data_block = description_json['cells'][0]['source']
 # Blocks run in their own namespace. We need to specifically inject
 # objects into that namespace, if desired.
 description_globals = {"Answer": Answer, "FloatAnswer": FloatAnswer, "ReAnswer": ReAnswer}
-description = {}
+description = {"config": {}}
 exec("".join(data_block), description_globals, description)
 
-# print("Description:")
-# print(description)
+default_config = {"num_tasks": -1}
+config = default_config | description['config']
+
+print("Description:")
+print(config)
 
 
 ##########################################################
@@ -308,6 +311,9 @@ for function in description['exported_functions']:
     learning_target['cells'].extend([text_cell, code_cell])
 
     i += 2
+
+for i in config['pass_through']:
+   learning_target['cells'].extend([description_json['cells'][i]])   
 
 output_lt_file = open(f"{output_dir_name}/workspace/learning_target.ipynb", "w")
 json.dump(learning_target, output_lt_file, indent=2)
