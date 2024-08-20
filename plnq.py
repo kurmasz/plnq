@@ -81,6 +81,8 @@ if location_is_dir:
 else:
     description_file_name = description_loc
 
+description_folder = os.path.dirname(description_file_name)
+
 if output_dir_name.endswith('/-'):
     if '/' in description_file_name:
         # TODO: This should probably be replaced with a path library
@@ -107,7 +109,7 @@ print(f"Template files located {template_dir_name}")
 other_graded_files = []
 if location_is_dir:
     description_base_name = os.path.basename(description_file_name)
-    other_graded_files = [f for f in os.listdir(description_loc) if f != description_base_name ]
+    other_graded_files = [f for f in os.listdir(description_loc) if f != description_base_name and not f.startswith('plnq_ignore_')]
 
 #
 # Load description
@@ -126,14 +128,14 @@ data_block = description_json['cells'][0]['source']
 
 # Blocks run in their own namespace. We need to specifically inject
 # objects into that namespace, if desired.
-description_globals = {"Answer": Answer, "FloatAnswer": FloatAnswer, "ReAnswer": ReAnswer}
+description_globals = {"Answer": Answer, "FloatAnswer": FloatAnswer, "ReAnswer": ReAnswer, "plnq_description_folder": description_folder}
 description = {"config": {}}
 exec("".join(data_block), description_globals, description)
 
-default_config = {"num_tasks": -1}
+default_config = {"pass_through": []}
 config = default_config | description['config']
 
-print("Description:")
+print("Config:")
 print(config)
 
 
