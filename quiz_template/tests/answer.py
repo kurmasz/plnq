@@ -13,8 +13,11 @@ class Answer:
         self.strict = strict
         self.param_index = param_index
 
-    def display_expected(self):
+    def display_expected_value(self):
         return self.expected
+    
+    def display_expected_string(self):
+        return f'return `{self.display_expected_value()}`'
 
     def verify_type(self, observed):
         if type(self.expected) != type(observed):
@@ -98,4 +101,16 @@ class InlineAnswer(Answer):
     def __init__(self, expected, expected_return_value=None, param_index=0):
         super().__init__(expected, strict=True, param_index=param_index)
         self.expected_return_value = expected_return_value
+
+
+    def display_expected_string(self):
+      ordinals = {
+        0: 'first',
+        1: 'second',
+        2: 'third',
+        3: 'fourth',
+        4: 'fifth'
+      }
+      ordinal = ordinals[self.param_index] if self.param_index <= 4 else f'{self.param_index}th'
+      return f'modify the {ordinal} parameter to be `{self.display_expected_value()}`'
 

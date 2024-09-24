@@ -1,10 +1,13 @@
-#################################################################
+###############################################################################
 #
 # plnq --- PrairieLearn Notebook Quiz
 #
+# plnq generates a complete autograded, notebook-based PrairieLearn question 
+# using only configuration information contained in a single .ipynb file.
+#
 # (c) 2023 Anna Carvalho and Zachary Kurmas
 #
-##################################################################
+###############################################################################
 
 import argparse
 import json
@@ -14,6 +17,7 @@ import uuid
 import re
 import sys
 import shutil
+import copy
 
 from quiz_template.tests.answer import Answer, FloatAnswer, ReAnswer, InlineAnswer
 
@@ -81,6 +85,8 @@ if location_is_dir:
 else:
     description_file_name = description_loc
 
+description_folder = os.path.dirname(description_file_name)
+
 if output_dir_name.endswith('/-'):
     if '/' in description_file_name:
         # TODO: This should probably be replaced with a path library
@@ -107,7 +113,7 @@ print(f"Template files located {template_dir_name}")
 other_graded_files = []
 if location_is_dir:
     description_base_name = os.path.basename(description_file_name)
-    other_graded_files = [f for f in os.listdir(description_loc) if f != description_base_name ]
+    other_graded_files = [f for f in os.listdir(description_loc) if f != description_base_name and not f.startswith('plnq_ignore_')]
 
 #
 # Load description
@@ -126,12 +132,15 @@ data_block = description_json['cells'][0]['source']
 
 # Blocks run in their own namespace. We need to specifically inject
 # objects into that namespace, if desired.
-description_globals = {"Answer": Answer, "FloatAnswer": FloatAnswer, "ReAnswer": ReAnswer, "InlineAnswer": InlineAnswer}
-description = {}
+description_globals = {"Answer": Answer, "FloatAnswer": FloatAnswer, "ReAnswer": ReAnswer, "InlineAnswer": InlineAnswer, "plnq_description_folder": description_folder}
+description = {"config": {}}
 exec("".join(data_block), description_globals, description)
 
-# print("Description:")
-# print(description)
+default_config = {"pass_through": []}
+config = default_config | description['config']
+
+print("Config:")
+print(config)
 
 
 ##########################################################
@@ -247,13 +256,43 @@ for file in other_graded_files:
 lt_file = open(f"{template_dir_name}/workspace/learning_target.ipynb", "r")
 learning_target = json.load(lt_file)
 
-#TODO Verify that this is markdown
+answer_cells = {}
+current_function_num = 0
+previous_function_name = None
+for current_cell_num in range(1, len(description_json['cells'])):
 
-i = 0
-for function in description['exported_functions']:
+    current_cell = description_json['cells'][current_cell_num]
+
+    if current_cell_num in config['ignore']:
+        print(f'Ignoring cell {current_cell_num}')
+        continue
+
+    if current_cell_num in config['pass_through']:
+      print(f'Passing cell {current_cell_num} without processing.')
+      learning_target['cells'].extend([current_cell])  
+      continue
+    
+    # If we encounter a code block that isn't explicitly ignored or passed through,
+    # assume that it belongs to the previous function. 
+    # If more than one code block follows a function, ignore all but the first.
+    if current_cell['cell_type'] == 'code':
+        if previous_function_name == None:
+            print('WARNING: Found code block before markdown block containing function.')
+            continue
+        elif previous_function_name in answer_cells:
+            print(f'WARNING: Found multiple code blocks for {previous_function_name}.')
+            continue
+        answer_cells[previous_function_name] = current_cell
+        continue
+
+    if current_cell['cell_type'] != 'markdown':
+        print(f'WARNING! Cell {current_cell_num} has unexpected type: {current_cell["cell_type"]}')
+        continue
+
+    function = description['exported_functions'][current_function_num]
     func_name = function['name']
     title_line = "" # ("# " + description["info"]["title"] + "\n\n")
-    text_block = [title_line] + description_json['cells'][i+1]['source']
+    text_block = [title_line] + current_cell['source']
 
     # find method signature and extract
     methods = []
@@ -266,7 +305,7 @@ for function in description['exported_functions']:
     if len(methods) > 1:
         print("ERROR: Found more than one marked method signature:", methods)
     elif len(methods) == 0:
-        print("WARNING: Did not find a method signature. Using a generic 'your_function'")
+        print(f"WARNING: Did not find a method signature in cell {current_cell_num}. Using a generic 'your_function'")
         methods = ["your_function()"]
 
     method_signature = methods[0]
@@ -285,7 +324,7 @@ for function in description['exported_functions']:
             params = params.replace("true,", "True,")
             params = params.replace("false,", "False,")
             answer = Answer.make(example[num_params])
-            text_block += [f"  * `{method_name}({params})` should return `{answer.display_expected()}`\n"] 
+            text_block += [f"  * `{method_name}({params})` should {answer.display_expected_string()}\n"] 
 
     text_cell = {
         "cell_type": "markdown",
@@ -307,7 +346,15 @@ for function in description['exported_functions']:
     
     learning_target['cells'].extend([text_cell, code_cell])
 
-    i += 2
+    previous_function_name = func_name
+    current_function_num += 1
+
+
+# for i in config['pass_through']:
+#   learning_target['cells'].extend([description_json['cells'][i]])   
+
+for i in config['pass_through']:
+   learning_target['cells'].extend([description_json['cells'][i]])   
 
 output_lt_file = open(f"{output_dir_name}/workspace/learning_target.ipynb", "w")
 json.dump(learning_target, output_lt_file, indent=2)
@@ -363,10 +410,11 @@ output_test_file.write(test_code)
 #
 # Make sure the reference solution produces the same answer as the test cases!
 
-i = 2
 answer = {}
 for function in description['exported_functions']:
-    answer_block = description_json['cells'][i]['source']
+    func_name = function['name']
+    answer_block = answer_cells[func_name]['source']
+    #answer_block = description_json['cells'][current_block]['source']
    
     # This allows functions defined in previous answer blocks to be available in the 
     # current answer block.
@@ -374,12 +422,9 @@ for function in description['exported_functions']:
     exec("".join(answer_block), answer_globals, answer)
     #print(f'AG: {answer}')
 
-    #TODO: Check for 3rd block.
-    # Make sure it is a code block.
-    # Make sure it contains a correctly-named function.
 
-    func_name = function['name']
-    all_tests = description['displayed_examples'][func_name] + description['test_cases'][func_name]
+    # clone the parameters so that one test can't affect another
+    all_tests = [copy.deepcopy(item) for item in description['displayed_examples'][func_name] + description['test_cases'][func_name]]
     
     # Modify cwd to dir containing data files
     original_cwd = os.getcwd()
@@ -402,9 +447,8 @@ for function in description['exported_functions']:
        
 
         if (not verifier.verify(computed_answer)):
-            print(f"!!! Test {index}: {verifier.message()}")
+            print(f"!!! Test {index} ({func_name}): {verifier.message()}")
 
-    i += 2
 
     # Restore original cwd
     os.chdir(original_cwd)
