@@ -1,15 +1,16 @@
 
-# PrairieLearn Notebook Quiz
+# PrairieLearn Notebook Question
 
-`plnq` generates complete notebook-based PrairieLearn questions[^1] using a specification contained in a single `.ipynb` file. Specifically, users place 
-   1. the problem description,
+`plnq` generates complete, auto-graded, notebook-based PrairieLearn questions using a specification contained in a single `.ipynb` file. Specifically, users place 
+   1. the problem (i.e., function) descriptions,
    2. sample input/output,
-   3. test cases, and
-   4. PrairieLearn metadata 
+   3. test cases, 
+   4. PrairieLearn metadata, and
+   5. sample solutions
    
 into a single `.ipynb` file. `plnq` then uses this data to generate a complete PrairieLearn question (including `info.json`, `question.html`, `server.py`, all `workspace` files and all `test` files.) 
 
-Using PrairieLearn terminology, `plnq` generates a single question: a directory that you would place inside `questions`. This question can have as many parts as you want; but, from PrairieLearn's perspective it is a single "question".
+Using PrairieLearn terminology, `plnq` generates a single question: a directory that you would place inside `questions`. This question can have as many parts (i.e., functions to write) as you want; but, from PrairieLearn's perspective it is a single "question".
 
 `plnq` assumes that 
   * a question is a sequence of tasks, where each task asks students to implement a well-defined function,
@@ -20,10 +21,11 @@ The result of running `plnq` is a complete notebook-based, auto-graded PrairieLe
 
 ## Usage:
 
-Simply run `plnq name_of_template.ipynb name/of/output/directory`.
+Simply run `python plnq name_of_template.ipynb name/of/output/directory`.
 
-The output directory is the name of the new directory that will contain the question. This should be unique for each assignment. (In other words, the output should be `pl-uni-cis500/questions/my_new_question` rather than `pl-uni-cis500`)
+For example, from the root of this repository, run `python plnq examples/simple_example_loop_hw.ipynb loc/of/pl/repo/questions/plnq_example`. Your chosen PrairieLearn course will now have a new question named `plnq_example`.
 
+* The output directory is the name of the new directory that will contain the question. This should be unique for each question. (In other words, the output should be `pl-uni-cis500/questions/my_new_question` rather than `pl-uni-cis500/questions`)
 * The output directory is optional and defaults to the name of the template without the `.ipynb` extension.
 * `plnq` is very paranoid about overwriting directories. That's by design. (I have nightmares about accidentally doing something dumb like `plnq new_question.ipynb ~`.)
 
@@ -93,7 +95,7 @@ For the mot part, the Markdown block simply contains the text the students read.
 Write a function !!!`area_of_triangle(a, b, c)`!!! That uses [Heron's Formula](https://en.wikipedia.org/wiki/Heron%27s_formula) to calculate the area of the triangle with side lengths `a`, `b`, and `c`
 ```
 
-Following each Markdown block, is a code block containing the solution to each task. The purpose of the code block is to sanity-check the assignment (i.e., get the instructor to solve the problem to make sure it isn't more difficult than expected) and verify that the expected answers are correct.
+Following each Markdown block, is a code block containing the solution to each task. The purpose of the code block is to sanity-check the assignment (i.e., get the instructor to solve the problem to make sure it isn't more difficult than expected) and verify that the expected answers for the tests are correct.
 
 ### Comparing observed and expected values
 
@@ -112,11 +114,37 @@ displayed_examples = {
 
 `FloatAnswer` is a subclass of `Answer`.  Both are defined in `quiz_template/tests/answer.py`. In principle, different types of comparisons can be configured by creating different subclasses of `Answer` (however, I haven't had a need to do this yet, so this feature is completely untested).
 
-## Notes:
+# Additional Configuration
+
+The first block of the specification can optionally contain a hash named `config`. The properties of this hash provide additional configuration options.
+
+
+## Ignore Blocks
+
+To ignore blocks (i.e., not include them in the resulting question), add a list named `ignore` to the `config` hash containing the indices of the blocks to ignore.
+
+````
+config = {
+    "ignore": [3, 8] 
+}
+````
+
+Note:
+  1. Adding or removing blocks will change the indices of subsequent blocks and you will need to update the `ignore` list by hand.
+  2. Each function requires two blocks (a Markdown description and code block with the solution). If you accidentally ignore only one of these two blocks, strange things will happen.
+
+See `examples/ignore_blocks.ipynb`
+
+## Pass Through Blocks
+
+To pass a block through to the generated workspace unchanged,  add a list named `pass_through` to the `config` hash.
+
+Note:
+  1. Adding or removing blocks will change the indices of subsequent blocks and you will need to update the `pass_through` list by hand.
+  2. Description blocks and the corresponding code block are generated as a pair. There is currently no way of inserting a pass-through block between the two. Also, remember that the code block in the input with the sample answer is not the same as the code block that gets inserted into the output for the students to fill out. That means that even if you put a pass-through between the description and the sample answer, the pass-through block will appear _after_ the code block.
+
+# Notes:
 
 
 * To use libraries inside the description block, put the `import` statement at the top of the description block.
 * `plnq` generates `test.py`, the source code for the automated tests. That means that the test parameters and expected values need to be converted into Python literals. `plnq` uses `json.dumps` to do this. Therefore, only values that are JSON serializable are currently supported.
-
-
-[^1] We originally focused on quizzes; but, didn't want to change the name when we expanded the scope to other types of assignments.
