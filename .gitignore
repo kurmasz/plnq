@@ -4,4 +4,5 @@ outputs
 tests/regression_tests/observed_output
 examples/output
 *~
+__pycache__
 
