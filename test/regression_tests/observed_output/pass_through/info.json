@@ -1,0 +1,27 @@
+{
+  "uuid": "32b68971-6b3f-415e-bf09-dd0ef9f408d5",
+  "title": "Introduction to Loops",
+  "topic": "loops",
+  "tags": [
+    "loops",
+    "hw"
+  ],
+  "type": "v3",
+  "singleVariant": true,
+  "gradingMethod": "External",
+  "workspaceOptions": {
+    "image": "prairielearn/workspace-jupyterlab-python",
+    "port": 8080,
+    "home": "/home/jovyan",
+    "rewriteUrl": false,
+    "gradedFiles": [
+      "learning_target.ipynb"
+    ]
+  },
+  "externalGradingOptions": {
+    "enabled": true,
+    "image": "prairielearn/grader-python",
+    "entrypoint": "/python_autograder/run.sh",
+    "timeout": 20
+  }
+}
