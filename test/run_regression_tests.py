@@ -48,6 +48,12 @@ def are_dirs_same(dir1, dir2):
     compared = dircmp(dir1, dir2)
     if (compared.left_only or compared.right_only or compared.diff_files 
         or compared.funny_files):
+        
+        print("Only in dir1:", compared.left_only)
+        print("Only in dir2:", compared.right_only)
+        print("Differing files:", compared.diff_files)
+        print("Uncomparable files:", compared.funny_files)
+
         return False
     for subdir in compared.common_dirs:
         if not are_dirs_same(os.path.join(dir1, subdir), os.path.join(dir2, subdir)):

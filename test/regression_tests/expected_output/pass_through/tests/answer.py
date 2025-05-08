@@ -21,7 +21,7 @@ class Answer:
 
     def verify_type(self, observed):
         if type(self.expected) != type(observed):
-            self.message_content = f'Expected object of type {type(self.expected)}, but received {type(observed)}'
+            self.message_content = f'Expected object of type {type(self.expected)}, but received {type(observed)} {observed}'
             return False
         return True
 
@@ -79,7 +79,11 @@ class FloatAnswer(Answer):
         return False
 
 class ReAnswer(Answer):
-    def __init__(self, expected):
+    def __init__(self, expected, alt_answer=None):
+
+        # If present, display the alt_answer as the expected value, rather than the 
+        # regular expression.
+        self.alt_answer = alt_answer
         if isinstance(expected, str):
             super().__init__(re.compile(expected), strict=True)
         else:
@@ -87,7 +91,7 @@ class ReAnswer(Answer):
 
     def verify_type(self, observed):
         if type(observed) != str:
-            self.message_content = f'Expected object of type {type("str")}, but received {type(observed)}'
+            self.message_content = f'Expected object of type {type("str")}, but received {type(observed)} {observed}'
             return False
         return True
 
@@ -96,6 +100,12 @@ class ReAnswer(Answer):
             return True
         self.message_content = f'Expected {observed} to match {self.expected}'
         return False
+    
+    def display_expected_value(self):
+        if self.alt_answer != None:
+            return self.alt_answer
+        else:
+            return super().display_expected_value()
     
 class InlineAnswer(Answer):
     def __init__(self, expected, expected_return_value=None, param_index=0):
