@@ -23,7 +23,7 @@ class HelperTests(unittest.TestCase):
 
     def test_daor_single_component(self):
         observed = plnq.determine_absolute_output_dir("the_dir", "the_input.ipynb")
-        self.assertEqual("thes_dir", observed)
+        self.assertEqual("the_dir", observed)
 
     def test_daor_relative_path(self):
         observed = plnq.determine_absolute_output_dir("a/b/c/dir", "the_input.ipynb")

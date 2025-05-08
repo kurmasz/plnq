@@ -13,11 +13,13 @@ import answer
 
 class Test(PLTestCaseWithPlot):
     
-  def verify(self, function_name, expected, params_json, param_index=-1):
+  def verify(self, function_name, expected, params_json, param_index=-1, cast=None):
     original_params = json.loads(params_json)
     params = json.loads(params_json)
     return_value = Feedback.call_user(getattr(self.st, function_name), *params)
- 
+    if cast and cast != type(None):
+      return_value = cast(return_value)
+
     verifier = answer.Answer.make(expected)
 
     if (param_index == -1):

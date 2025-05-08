@@ -100,6 +100,3 @@ if not os.path.exists(plnq_script):
 regression_inputs = glob.glob(f"{current_dir_name}/regression_tests/input/*.ipynb")
 for test_input in regression_inputs:
     run_regression_test(test_input)
-
-
-
