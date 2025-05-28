@@ -41,147 +41,127 @@ class Test(PLTestCaseWithPlot):
 
   
   @points(1)
-  @name("test 1: letters_in_string")
+  @name("test 1: extract_phone")
   def test_01(self):
-      self.verify('letters_in_string', 10, '["Hello, World!"]', -1, None)
+      self.verify('extract_phone', '6162314455', '["616-231-4455"]', -1, None)
 
   @points(1)
-  @name("test 2: letters_in_string")
+  @name("test 2: extract_phone")
   def test_02(self):
-      self.verify('letters_in_string', 30, '["To be, or not to be: that is the question."]', -1, None)
+      self.verify('extract_phone', None, '["(616)-231-4455"]', -1, None)
 
   @points(1)
-  @name("test 3: letters_in_string")
+  @name("test 3: extract_phone")
   def test_03(self):
-      self.verify('letters_in_string', 3, '["C-3PO"]', -1, None)
+      self.verify('extract_phone', None, '["616-231-445"]', -1, None)
 
   @points(1)
-  @name("test 4: letters_in_string")
+  @name("test 4: extract_phone")
   def test_04(self):
-      self.verify('letters_in_string', 2, '["R2D2"]', -1, None)
+      self.verify('extract_phone', '5174328841', '["517-432-8841"]', -1, None)
 
   @points(1)
-  @name("test 5: letters_in_string")
+  @name("test 5: extract_phone")
   def test_05(self):
-      self.verify('letters_in_string', 25, '["Fourscore and seven years ago"]', -1, None)
+      self.verify('extract_phone', '3137352132', '["313-735-2132"]', -1, None)
 
   @points(1)
-  @name("test 6: letters_in_string")
+  @name("test 6: extract_phone")
   def test_06(self):
-      self.verify('letters_in_string', 0, '[""]', -1, None)
+      self.verify('extract_phone', None, '["1-313-735-2132"]', -1, None)
 
   @points(1)
-  @name("test 7: letters_in_string")
+  @name("test 7: extract_phone")
   def test_07(self):
-      self.verify('letters_in_string', 3, '["Mom"]', -1, None)
+      self.verify('extract_phone', None, '["313-75-2132"]', -1, None)
 
   @points(1)
-  @name("test 8: letters_in_string")
+  @name("test 8: parse_format")
   def test_08(self):
-      self.verify('letters_in_string', 0, '["12345"]', -1, None)
+      self.verify('parse_format', ('D', '-', 'g'), '["D-g"]', -1, None)
 
   @points(1)
-  @name("test 9: letters_in_string")
+  @name("test 9: parse_format")
   def test_09(self):
-      self.verify('letters_in_string', 0, '["1 2 3 4 5"]', -1, None)
+      self.verify('parse_format', (None, None, 'k'), '["k"]', -1, None)
 
   @points(1)
-  @name("test 10: num_long_words")
+  @name("test 10: parse_format")
   def test_10(self):
-      self.verify('num_long_words', 2, '["Ivan the Terrible", 4]', -1, None)
+      self.verify('parse_format', (None, ':', 'y'), '[":y"]', -1, None)
 
   @points(1)
-  @name("test 11: num_long_words")
+  @name("test 11: parse_format")
   def test_11(self):
-      self.verify('num_long_words', 3, '["Imagination is more important than knowledge.", 5]', -1, None)
+      self.verify('parse_format', ('>', '--', 'm'), '[">--m"]', -1, None)
 
   @points(1)
-  @name("test 12: num_long_words")
+  @name("test 12: parse_format")
   def test_12(self):
-      self.verify('num_long_words', 1, '["Ivan the Terrible", 5]', -1, None)
+      self.verify('parse_format', None, '["Dm--z"]', -1, None)
 
   @points(1)
-  @name("test 13: num_long_words")
+  @name("test 13: parse_format")
   def test_13(self):
-      self.verify('num_long_words', 0, '["Ivan the Terrible", 9]', -1, None)
+      self.verify('parse_format', ('X', '-.', 'w'), '["X-.w"]', -1, None)
 
   @points(1)
-  @name("test 14: num_long_words")
+  @name("test 14: parse_format")
   def test_14(self):
-      self.verify('num_long_words', 3, '["Ivan the Terrible", 3]', -1, None)
+      self.verify('parse_format', ('X', '-.', None), '["X-."]', -1, None)
 
   @points(1)
-  @name("test 15: num_long_words")
+  @name("test 15: parse_format")
   def test_15(self):
-      self.verify('num_long_words', 3, '["Imagination is more important than knowledge", 5]', -1, None)
+      self.verify('parse_format', (None, '-.', 'w'), '["-.w"]', -1, None)
 
   @points(1)
-  @name("test 16: num_long_words")
+  @name("test 16: parse_format")
   def test_16(self):
-      self.verify('num_long_words', 1, '["Imagination is more important than knowledge", 10]', -1, None)
+      self.verify('parse_format', (None, '-.', None), '["-."]', -1, None)
 
   @points(1)
-  @name("test 17: num_long_words")
+  @name("test 17: parse_format")
   def test_17(self):
-      self.verify('num_long_words', 0, '["Imagination is more important than knowledge", 12]', -1, None)
+      self.verify('parse_format', ('X', None, 'w'), '["Xw"]', -1, None)
 
   @points(1)
-  @name("test 18: num_long_words")
+  @name("test 18: parse_format")
   def test_18(self):
-      self.verify('num_long_words', 3, '["Imagination is more important than knowledge", 9]', -1, None)
+      self.verify('parse_format', ('X', None, None), '["X"]', -1, None)
 
   @points(1)
-  @name("test 19: num_long_words")
+  @name("test 19: parse_format")
   def test_19(self):
-      self.verify('num_long_words', 5, '["Imagination is more important than knowledge", 3]', -1, None)
+      self.verify('parse_format', (None, None, 'w'), '["w"]', -1, None)
 
   @points(1)
-  @name("test 20: first_alphabetically")
+  @name("test 20: parse_format")
   def test_20(self):
-      self.verify('first_alphabetically', 'ivan', '["Ivan the Terrible"]', -1, None)
+      self.verify('parse_format', ('d', ':', 'c'), '["d:c"]', -1, None)
 
   @points(1)
-  @name("test 21: first_alphabetically")
+  @name("test 21: get_first_quote")
   def test_21(self):
-      self.verify('first_alphabetically', 'lose', '["You win some, you lose some"]', -1, None)
+      self.verify('get_first_quote', 'Pickles', '["Here comes \\"Pickles\\" and \\"Wheezer\\"."]', -1, None)
 
   @points(1)
-  @name("test 22: first_alphabetically")
+  @name("test 22: get_first_quote")
   def test_22(self):
-      self.verify('first_alphabetically', 'but', '["Life is really simple, but we insist on making it complicated"]', -1, None)
+      self.verify('get_first_quote', None, '["There are no quotes here"]', -1, None)
 
   @points(1)
-  @name("test 23: first_alphabetically")
+  @name("test 23: get_first_quote")
   def test_23(self):
-      self.verify('first_alphabetically', 'a', '["Life is like a box of chocolates"]', -1, None)
+      self.verify('get_first_quote', 'Stretch', '["More nicknames: \\"Stretch\\", \\"Gravity\\", \\"Rainmaker\\""]', -1, None)
 
   @points(1)
-  @name("test 24: create_abbreviation")
+  @name("test 24: get_first_quote")
   def test_24(self):
-      self.verify('create_abbreviation', 'USA', '["United States of America"]', -1, None)
+      self.verify('get_first_quote', None, '["This is a \\"Partial quotation"]', -1, None)
 
   @points(1)
-  @name("test 25: create_abbreviation")
+  @name("test 25: get_first_quote")
   def test_25(self):
-      self.verify('create_abbreviation', 'IUCN', '["International Union for the Conservation of Nature"]', -1, None)
-
-  @points(1)
-  @name("test 26: create_abbreviation")
-  def test_26(self):
-      self.verify('create_abbreviation', 'CIA', '["Central Intelligence Agency"]', -1, None)
-
-  @points(1)
-  @name("test 27: create_abbreviation")
-  def test_27(self):
-      self.verify('create_abbreviation', 'FBI', '["Federal Bureau of Investigation"]', -1, None)
-
-  @points(1)
-  @name("test 28: create_abbreviation")
-  def test_28(self):
-      self.verify('create_abbreviation', 'UAL', '["University of the Arts London"]', -1, None)
-
-  @points(1)
-  @name("test 29: create_abbreviation")
-  def test_29(self):
-      self.verify('create_abbreviation', 'CSPC', '["Center for the Study of the Presidency and Congress"]', -1, None)
+      self.verify('get_first_quote', 'quote', '["End with a \\"quote\\""]', -1, None)
 

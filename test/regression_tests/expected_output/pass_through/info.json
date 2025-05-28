@@ -1,10 +1,10 @@
 {
-  "uuid": "32b68971-6b3f-415e-bf09-dd0ef9f408d5",
-  "title": "Introduction to Loops",
-  "topic": "loops",
+  "uuid": "7ee08f61-e8ee-45e5-b6a8-970e8a05a2ce",
+  "title": "Regular Expression capture",
+  "topic": "regex",
   "tags": [
-    "loops",
-    "hw"
+    "regex",
+    "ic"
   ],
   "type": "v3",
   "singleVariant": true,

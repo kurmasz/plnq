@@ -2,23 +2,18 @@ def generate(data):
     data['params']['names_for_user'] = []
     data["params"]["names_from_user"] = [
   {
-    "name": "letters_in_string",
-    "description": "A function that returns the number of letters in a string",
+    "name": "extract_phone",
+    "description": "A function that extract the digits from a formatted phone number",
     "type": "function"
   },
   {
-    "name": "num_long_words",
-    "description": "A function that returns the number of words longer than the threshold",
+    "name": "parse_format",
+    "description": "A function to parse matplotlib's format string",
     "type": "function"
   },
   {
-    "name": "first_alphabetically",
-    "description": "A function that returns the word in a phrase that comes first alphabetically",
-    "type": "function"
-  },
-  {
-    "name": "create_abbreviation",
-    "description": "A function that returns an abbreviated version of a phrase",
+    "name": "get_first_quote",
+    "description": "A function returning the first quote in a string",
     "type": "function"
   }
 ]
