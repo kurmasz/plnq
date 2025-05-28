@@ -1,0 +1,27 @@
+{
+  "uuid": "c002b6d6-fc8c-48e0-9ba3-b088b2cc637d",
+  "title": "Writing Functions (Part 2)",
+  "topic": "functions",
+  "tags": [
+    "functions",
+    "hw"
+  ],
+  "type": "v3",
+  "singleVariant": true,
+  "gradingMethod": "External",
+  "workspaceOptions": {
+    "image": "prairielearn/workspace-jupyterlab-python",
+    "port": 8080,
+    "home": "/home/jovyan",
+    "rewriteUrl": false,
+    "gradedFiles": [
+      "learning_target.ipynb"
+    ]
+  },
+  "externalGradingOptions": {
+    "enabled": true,
+    "image": "prairielearn/grader-python",
+    "entrypoint": "/python_autograder/run.sh",
+    "timeout": 20
+  }
+}

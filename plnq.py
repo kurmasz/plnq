@@ -10,7 +10,7 @@
 ###############################################################################
 
 import argparse
-import json
+import json 
 from pathlib import Path
 import os
 import io
@@ -200,12 +200,10 @@ def main():
     # Blocks run in their own namespace. We need to specifically inject
     # objects into that namespace, if desired.
     plnq = PLNQData()
-    description_globals = {"Answer": Answer, "FloatAnswer": FloatAnswer, "ReAnswer": ReAnswer,
+    description = {"Answer": Answer, "FloatAnswer": FloatAnswer, "ReAnswer": ReAnswer,
                            "InlineAnswer": InlineAnswer, "plnq_description_folder": description_folder,
-                           'plnq': plnq}
+                           'plnq': plnq, "config": {}}
     
-    description = {"config": {}}
-
     stdout_buffer = io.StringIO()
     original_stdout = sys.stdout
     sys.stdout = stdout_buffer
@@ -216,7 +214,7 @@ def main():
         if not code:
             continue
 
-        exec(code, description_globals, description)
+        exec(code, description)
 
     # TODO: Test Me
     sys.stdout = original_stdout
@@ -344,32 +342,39 @@ def main():
         if not text_block:
             continue
 
-        #  for current_cell_num in range(1, len(description_json['cells'])):
-        # current_cell = description_json['cells'][current_cell_num]
+        #
+        # Ignore marked blocks
+        #
+        PLNQ_IGNORE = 'PLNQ.Ignore'
+        if f'!!!{PLNQ_IGNORE}!!!' in text_block:
+            if (args.verbose):
+                print(f'Ignoring cell {cell_index}')
+            continue    
 
-        # if current_cell_num in config['ignore']:
-        #    if (args.verbose):
-        #        print(f'Ignoring cell {current_cell_num}')
-        #    continue
+        re_match = re.search(PLNQ_IGNORE, text_block, re.IGNORECASE)
+        if re_match:
+            found_string = re_match.group(0)
+            print(f"WARNING: Found '{found_string}', which is a close, but inexact match for '!!!{PLNQ_IGNORE}!!!' in cell {cell_index}.")
+            print(f"         Make corrections if you want this cell ignored.")
 
-        # if current_cell_num in config['pass_through']:
-        #    if (args.verbose):
-        #        print(f'Passing cell {current_cell_num} without processing.')
-        #    learning_target['cells'].extend([current_cell])
-        #    continue
+        #
+        # Pass through marked blocks without processing
+        # (Other than to remove the passthrough marker)
+        #
+        PLNQ_PASS_THROUGH = 'PLNQ.PassThrough'
+        if f'!!!{PLNQ_PASS_THROUGH}!!!' in text_block:
+            if (args.verbose):
+                print(f'Passing cell {cell_index} through without processing.')
+            cell.source = cell.source.replace(f'!!!{PLNQ_PASS_THROUGH}!!!', '')
+            learning_target['cells'].extend([cell])
+            continue    
 
-        # function = plnq.exported_functions[current_function_num]
-        # func_name = function['name']
-        # title_line = ""  # ("# " + description["info"]["title"] + "\n\n")
-        # text_block = [title_line] + current_cell['source']
+        re_match = re.search(PLNQ_PASS_THROUGH, text_block, re.IGNORECASE)
+        if re_match:
+            found_string = re_match.group(0)
+            print(f"WARNING: Found '{found_string}', which is a close, but inexact match for '!!!{PLNQ_PASS_THROUGH}!!!' in cell {cell_index}.")
+            print(f"         Make corrections if you want this cell passed through without processing.")
 
-        # find method signature and extract
-        # methods = []
-        # for index, line in enumerate(text_block):
-        #    matches = re.findall(r"!!!`([^`]+)`!!!", line)
-        #    methods += matches
-        #    if (len(matches) > 0):
-        #        text_block[index] = re.sub("!!!", "", line)
 
         functions = re.findall(r"!!!`([^`]+)`!!!", text_block)    
         if len(functions) > 1:
