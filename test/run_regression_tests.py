@@ -71,9 +71,12 @@ def get_uuid(assignment_directory):
 #
 ##############################################################################
 
+# Get the absolute path to the project root (1 level up from this file)
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
 current_dir_name = os.path.dirname(__file__)
 regression_base = f"{current_dir_name}/regression_tests"
-plnq_script = f"{regression_base}/../../plnq.py"
+
 
 def run_regression_test(name):
     print(f"Testing {name} .... ", end='')
@@ -87,7 +90,10 @@ def run_regression_test(name):
     # Specify that the uuid should be the same as the expected output (so that the directories can be identical)
     uuid = get_uuid(expected_output_dir)
 
-    result = subprocess.run([sys.executable, plnq_script, "--destroy", "--uuid", uuid, name, observed_output_dir], capture_output=True, text=True)
+    #result = subprocess.run([sys.executable, plnq_script, "--destroy", "--uuid", uuid, name, observed_output_dir], capture_output=True, text=True)
+    result = subprocess.run(['python', '-m', 'plnq.plnq', "--destroy", "--uuid", uuid, name, observed_output_dir], 
+                            env={**os.environ, 'PYTHONPATH': project_root},
+                            capture_output=True, text=True)
     if result.returncode != 0:
         print(f"Fail with return value {result.returncode}")
         print(result.stderr)
@@ -98,11 +104,6 @@ def run_regression_test(name):
         print("Fail. Output directories differ")
        
    
-if not os.path.exists(plnq_script):
-    print(f"plnq_script not configured properly. {plnq_script} doesn't exist.")
-    exit(1)
-
-
 regression_inputs = glob.glob(f"{current_dir_name}/regression_tests/input/*.ipynb")
 for test_input in regression_inputs:
     run_regression_test(test_input)
