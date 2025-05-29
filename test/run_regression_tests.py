@@ -77,6 +77,10 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 current_dir_name = os.path.dirname(__file__)
 regression_base = f"{current_dir_name}/regression_tests"
 
+runner = ['python', '-m', 'plnq.plnq'] # Run plnq from dev source
+if len(sys.argv) > 1:
+    runner = [sys.argv[1]] # Run a specific executable script.
+print(f"Using {runner}")
 
 def run_regression_test(name):
     print(f"Testing {name} .... ", end='')
@@ -90,8 +94,7 @@ def run_regression_test(name):
     # Specify that the uuid should be the same as the expected output (so that the directories can be identical)
     uuid = get_uuid(expected_output_dir)
 
-    #result = subprocess.run([sys.executable, plnq_script, "--destroy", "--uuid", uuid, name, observed_output_dir], capture_output=True, text=True)
-    result = subprocess.run(['python', '-m', 'plnq.plnq', "--destroy", "--uuid", uuid, name, observed_output_dir], 
+    result = subprocess.run(runner + ["--destroy", "--uuid", uuid, name, observed_output_dir], 
                             env={**os.environ, 'PYTHONPATH': project_root},
                             capture_output=True, text=True)
     if result.returncode != 0:
