@@ -77,13 +77,18 @@ project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 current_dir_name = os.path.dirname(__file__)
 regression_base = f"{current_dir_name}/regression_tests"
 
-runner = ['python', '-m', 'plnq.plnq'] # Run plnq from dev source
+runner = [sys.executable, '-m', 'plnq.plnq'] # Run plnq from dev source
 if len(sys.argv) > 1:
     runner = [sys.argv[1]] # Run a specific executable script.
 print(f"Using {runner}")
 
 def run_regression_test(name):
-    print(f"Testing {name} .... ", end='')
+
+    # Remove the redundant common prefix
+    prefix = os.path.commonprefix([regression_base, name])
+    short_name = f".{name[len(prefix):]}"
+
+    print(f"Testing {short_name} .... ", end='')
 
     parts = re.findall(r"\/([^\/]+).ipynb$", name)
     basename = parts[0]

@@ -9,6 +9,9 @@ authors = [
   { name="Zachary Kurmas", email="kurmasz@gvsu.edu" },
 ]
 description = "Builds PrairieLearn questions containing auto-graded Jupyter notebooks"
+dependencies = [
+    "nbformat >= 5.10.4"
+]
 readme = "README.md"
 requires-python = ">=3.9"
 classifiers = [

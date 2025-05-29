@@ -19,7 +19,7 @@ import subprocess
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
 
 def run_plnq(parameters):
-    return subprocess.run(['python', '-m', 'plnq.plnq'] + parameters, 
+    return subprocess.run([sys.executable, '-m', 'plnq.plnq'] + parameters, 
                           env={**os.environ, 'PYTHONPATH': project_root},
                           capture_output=True, text=True)
 

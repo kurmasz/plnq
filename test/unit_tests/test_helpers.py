@@ -12,7 +12,7 @@ import sys
 import unittest
 import os
 
-sys.path.append(os.path.dirname(__file__) + '/../..')
+# sys.path.append(os.path.dirname(__file__) + '/../..')
 from plnq.plnq import determine_absolute_output_dir
 
 class HelperTests(unittest.TestCase):

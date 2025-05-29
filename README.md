@@ -118,6 +118,17 @@ that contains other content you want to keep). Note: The code that searches for 
 
 `plnq` searches for exact matches to the ignore and pass-through markers. If a block is not being handled properly, double-check the capitalization and the number of exclamation marks. Also, using too many exclamation marks may result in stray characters in the output.
 
+
+# Dev Install
+
+To set up for local development:
+* Clone this repo
+* Create a virtual python environment: `python -m venv venv`
+* Activate the virtual environment: `source venv/bin/activate`
+* Install this package in edit mode: `pip install -e .`
+
+(If you don't want to use `activate`, you can run python commands out of `venv/bin`.  For example, `venv/bin/pip install -e .`)
+
 # Notes:
 
 
