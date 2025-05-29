@@ -1,0 +1,1 @@
+docker build -t python-test-3.9 .

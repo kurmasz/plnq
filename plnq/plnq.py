@@ -75,7 +75,8 @@ def destroy_existing_target(directory):
 
 def open_template(*parts):
     # The ability to pass multiple parts to joinpath was not added until
-    # Python 3.11
+    # Python 3.11. Also, this line fails for Python 3.8 or lower because
+    # importlib.resources does not have an attribute 'files'
     path = importlib.resources.files('plnq.quiz_template').joinpath(parts[0])
     for part in parts[1:]:
         path = path.joinpath(part)
@@ -83,7 +84,8 @@ def open_template(*parts):
 
 def copy_template(destination, *parts):
     # The ability to pass multiple parts to joinpath was not added until
-    # Python 3.11
+    # Python 3.11. Also, this line fails for Python 3.8 or lower because
+    # importlib.resources does not have an attribute 'files'
     path = importlib.resources.files('plnq.quiz_template').joinpath(parts[0])
     for part in parts[1:]:
         path = path.joinpath(part)
@@ -282,8 +284,7 @@ def main():
 
     # TODO: I don't think we're using these anymore.
     # default_config = {"ignore": [], "pass_through": [], "execute": []}
-    default_config = {}
-    config = default_config | description['config']
+    config = description['config']
 
     if (args.verbose):
         print("Config:")

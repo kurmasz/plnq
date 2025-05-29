@@ -129,6 +129,16 @@ To set up for local development:
 
 (If you don't want to use `activate`, you can run python commands out of `venv/bin`.  For example, `venv/bin/pip install -e .`)
 
+The current minimum version is 3.9. The code uses `importlib.resources.files` which was not 
+introduced until Python 3.9.
+
+To verify whether this package will still build and run under Python 3.9
+* `cd` to the project root  
+* run `./docker_build`
+* run `./docker_run`
+
+This will build a Docker image with Python 3.9, then run the automated tests.
+
 # Notes:
 
 * To use libraries inside the description block, put the `import` statement at the top of the description block.
