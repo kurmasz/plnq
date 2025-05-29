@@ -20,9 +20,9 @@ The result of running `plnq` is a complete notebook-based, auto-graded PrairieLe
 
 ## Usage:
 
-Simply run `python plnq name_of_template.ipynb name/of/output/directory`.
+Simply run `plnq name_of_template.ipynb name/of/output/directory`.
 
-For example, from the root of this repository, run `python plnq examples/simple_example_loop_hw.ipynb loc/of/pl/repo/questions/plnq_example`. Your chosen PrairieLearn course will now have a new question named `plnq_example`.
+For example, from the root of this repository, run `plnq examples/simple_example_loop_hw.ipynb loc/of/pl/repo/questions/plnq_example`. Your chosen PrairieLearn course will now have a new question named `plnq_example`.
 
 * The output directory is the name of the new directory that will contain the question. This should be unique for each question. (In other words, the output should be `pl-uni-cis500/questions/my_new_question` rather than `pl-uni-cis500/questions`)
 * The output directory is optional and defaults to the name of the template without the `.ipynb` extension.

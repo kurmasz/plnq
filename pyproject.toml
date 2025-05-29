@@ -3,7 +3,7 @@ requires = ["hatchling >= 1.27"]
 build-backend = "hatchling.build"
 
 [project]
-name = "plnq"
+name = "plnq-gvsu"
 version = "2.0.0"
 authors = [
   { name="Zachary Kurmas", email="kurmasz@gvsu.edu" },
@@ -23,6 +23,13 @@ classifiers = [
 ]
 license = "GPL-3.0-or-later"
 license-files = ["LICEN[CS]E*"]
+
+[tool.hatch.build.targets.sdist]
+include = ["plnq/**"]
+
+[tool.hatch.build.targets.wheel]
+include = ["plnq/**"]
+
 
 [project.urls]
 Homepage = "https://github.com/kurmasz/plnq"
