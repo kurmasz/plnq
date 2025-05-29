@@ -13,9 +13,8 @@ into a single `.ipynb` file. `plnq` then uses this data to generate a complete P
 Using PrairieLearn terminology, `plnq` generates a single question: a directory that you would place inside `questions`. This question can have as many parts (i.e., functions to write) as you want; but, from PrairieLearn's perspective it is a single "question".
 
 `plnq` assumes that 
-  * a question is a sequence of tasks, where each task asks students to implement a well-defined function,
-  * each function is tested using a set of instructor-provided tests
-  * functions do not modify the input parameters. (Or, if they do, those modifications aren't tested.)
+  * a question is a sequence of tasks, where each task asks students to implement a well-defined function, and
+  * each function is tested using a set of instructor-provided tests.
 
 The result of running `plnq` is a complete notebook-based, auto-graded PrairieLearn question. You can modify this question (e.g., to add features not supported by `plnq`); however, be careful when doing this because running `plnq` again will overwrite these changes. (Or, if you avoid running `plnq` again, any oversights in the template will need to be fixed "by hand".)
 
@@ -39,55 +38,22 @@ The first block is a code block containing several dictionaries:
 
 `info` contains data placed in `info.json` including: `title`, `topics`, and `tags`
 ```
-info = {
+plnq.info = {
     "title": "Writing Functions",
     "topic": "functions",
     "tags": ["functions", "hw"]
 }
 ```
 
-
-`exported_functions` is used to set up `names_from_user` in `server.py`. This shows the list of functions that the students are to write (and causes them to be exported to the auto-grader).
-```
-exported_functions = [
-    {
-        'name': 'area_of_triangle',
-        'description': "A function that returns the area of a triangle given the lengths of its sides"
-    },
-    {
-        'name': 'sum_four_digits',
-        'description': "A function that returns the sum of the digits in a four-digit number"
-    }
-]
-```
-
-`displayed_examples` lists the input and expected output for examples that are displayed to the user.  For example
-```
-displayed_examples = {
-    'area_of_triangle': [
-        [1, 1, 1, math.sqrt(3)/4],
-        [3, 4, 5, 6]
-    ],
-    'sum_four_digits': [
-        [1111, 4],
-        [1234, 10]
-    ]
-}
-```
-generates lines like: `area_of_triangle(3, 4, 5) should return 6`
-
-`test_cases` lists the input and expected output for automated tests that are not shown to the students.  It has the same format as `displayed_examples`.
-
+After the initial question-level metadata block, the remaining blocks describe the specific tasks. Each task requires two blocks 
+  1. A Markdown block containing instructions, and 
+  2. A code block containing the solution, example input/output, test cases, and other task-level metadata.
 
 ### Task Description Block  
 
-After the initial metadata block, the remaining blocks describe the specific tasks. Each task requires two blocks 
-  1. A Markdown block containing instructions, and 
-  2. A code block containing the solution.
+For the most part, the Markdown block simply contains the text the students read. `plnq` automatically adds the sample input/output to the end of this block.
 
-For the mot part, the Markdown block simply contains the text the students read. `plnq` automatically adds the sample input/output to the end of this block.
-
-**Important:** This block should contain the function's signature somewhere delineated with `!!!`. (`plnq` uses this to build the sample input/output.)
+**Important:** This block should contain the function's signature delineated with `!!!`. (`plnq` uses this to build the sample input/output.)
 
 ```
 # Task 1
@@ -95,7 +61,38 @@ For the mot part, the Markdown block simply contains the text the students read.
 Write a function !!!`area_of_triangle(a, b, c)`!!! That uses [Heron's Formula](https://en.wikipedia.org/wiki/Heron%27s_formula) to calculate the area of the triangle with side lengths `a`, `b`, and `c`
 ```
 
-Following each Markdown block, is a code block containing the solution to each task. The purpose of the code block is to sanity-check the assignment (i.e., get the instructor to solve the problem to make sure it isn't more difficult than expected) and verify that the expected answers for the tests are correct.
+### Task Code Block  
+
+Following each Markdown block, is a code block containing the solution to each task, as well as sample input/output, test cases, and other task-level metadata. The purpose of the solution is to 
+ 1. sanity-check the assignment (i.e., get the instructor to solve the problem to make sure it isn't more difficult than expected) and 
+ 2. verify that the expected answers for the examples and tests cases are correct.
+
+Call `plnq.add_function` to provide the additional metadata. The function takes the name of the function as the first 
+parameter, followed by several named parameters:
+   * `desc`: The description that appears in list of functions that students are to write. Specifically, 
+   this value is used to set up `names_from_user` in `server.py`. It is also necessary so that PrairieLearn will export the function to the auto-grader.
+   * `displayed_examples`: Lists the input and expected output for examples that are displayed to the user. 
+   * `test_cases`: Lists the cases run when the student clicks "Save and Grade". These are not shown to the user. 
+ 
+```
+plnq.add_function('area_of_triangle', 
+    desc='A function that returns the area of a triangle given the lengths of its sides',
+    displayed_examples=[
+        [1, 1, 1, math.sqrt(3)/4],
+        [3, 4, 5, 6.0]
+    ], 
+    test_cases=[
+        [2, 2, 2, math.sqrt(3)],
+        [5, 12, 13, 30.0],
+        [10, 13, 13, 60.0],
+        [5, 5, 6, 12.0],
+        [13, 15, math.sqrt(34), 37.5]
+    ]                                
+)
+```
+
+For `displayed_examples` and `test_cases` Each example/test case is a list where the first `n-1` values are parameters and the last value is the expected return value.
+
 
 ### Comparing observed and expected values
 
@@ -112,41 +109,17 @@ displayed_examples = {
 }
 ```
 
-`FloatAnswer` is a subclass of `Answer`.  Both are defined in `quiz_template/tests/answer.py`. In principle, different types of comparisons can be configured by creating different subclasses of `Answer` (however, I haven't had a need to do this yet, so this feature is completely untested).
-
 # Additional Configuration
 
-The first block of the specification can optionally contain a hash named `config`. The properties of this hash provide additional configuration options.
+* To ignore a Markdown block (i.e., not include it in the resulting question), add the string `!!!PLNQ.Ignore!!!` anywhere in the block. See `examples/ignore_blocks.ipynb`. By default, code blocks are not passed through to the workspace, so there is no need to explicitly ignore them.  
+* To pass a Markdown block through to the generated workspace unchanged, add the string `!!!PLNQ.PassThrough!!!` anywhere in the block. See `examples/pass_through.ipynb`. The default behavior is that Markdown blocks are scanned for a function signature, and a list of example inputs and outputs is added. If a block contains neither a pass-through marker nor a function signature, `plnq` will complain.
+* To pass a Code block through to the generated workspace, add a comment containing `!!!PLNQ.PassThrough!!!` anywhere in the block. This comment will not be included in the generated workspace (so don't put the pass-through marker in a comment that
+that contains other content you want to keep). Note: The code that searches for the pass-through marker is not sophisticated. Don't put the pass-through marker on the same line as a literal string containing a `#`.
 
-
-## Ignore Blocks
-
-To ignore blocks (i.e., not include them in the resulting question), add a list named `ignore` to the `config` hash containing the indices of the blocks to ignore.
-
-````
-config = {
-    "ignore": [3, 8] 
-}
-````
-
-Note:
-  1. Adding or removing blocks will change the indices of subsequent blocks and you will need to update the `ignore` list by hand.
-  2. Each function requires two blocks (a Markdown description and code block with the solution). If you accidentally ignore only one of these two blocks, strange things will happen.
-
-See `examples/ignore_blocks.ipynb`
-
-## Pass Through Blocks
-
-To pass a block through to the generated workspace unchanged,  add a list named `pass_through` to the `config` hash.
-
-Note:
-  1. Adding or removing blocks will change the indices of subsequent blocks and you will need to update the `pass_through` list by hand.
-  2. Description blocks and the corresponding code block are generated as a pair. There is currently no way of inserting a pass-through block between the two. Also, remember that the code block in the input with the sample answer is not the same as the code block that gets inserted into the output for the students to fill out. That means that even if you put a pass-through between the description and the sample answer, the pass-through block will appear _after_ the code block.
+`plnq` searches for exact matches to the ignore and pass-through markers. If a block is not being handled properly, double-check the capitalization and the number of exclamation marks. Also, using too many exclamation marks may result in stray characters in the output.
 
 # Notes:
 
 
 * To use libraries inside the description block, put the `import` statement at the top of the description block.
 * `plnq` generates `test.py`, the source code for the automated tests. That means that the test parameters and expected values need to be converted into Python literals. `plnq` uses `json.dumps` to do this. Therefore, only values that are JSON serializable are currently supported.
-
-(Touch for push)
