@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling >= 1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "plnq"
+version = "2.0.0"
+authors = [
+  { name="Zachary Kurmas", email="kurmasz@gvsu.edu" },
+]
+description = "Builds PrairieLearn questions containing auto-graded Jupyter notebooks"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Development Status :: 2 - Pre-Alpha",
+    "Environment :: Console",
+    "Intended Audience :: Education"
+]
+license = "GPL-3.0-or-later"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/kurmasz/plnq"
+Issues = "https://github.com/kurmasz/plnq/issues"
+
+[project.scripts]
+plnq = "plnq.plnq:main"

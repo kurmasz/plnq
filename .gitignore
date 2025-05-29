@@ -1,8 +1,16 @@
-inputs
-outputs
 /tmp*
 tests/regression_tests/observed_output
 examples/output
 *~
 __pycache__
+*.py[cod]
+*.so
+
+build/
+dist/
+*.egg-info/
+*.egg
+.eggs/
+
+
 
