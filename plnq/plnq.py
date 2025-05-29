@@ -74,11 +74,20 @@ def destroy_existing_target(directory):
     shutil.rmtree(directory)
 
 def open_template(*parts):
-    path = importlib.resources.files('plnq.quiz_template').joinpath(*parts)
+    # The ability to pass multiple parts to joinpath was not added until
+    # Python 3.11
+    path = importlib.resources.files('plnq.quiz_template').joinpath(parts[0])
+    for part in parts[1:]:
+        path = path.joinpath(part)
     return open(path, 'r')
 
 def copy_template(destination, *parts):
-    path = importlib.resources.files('plnq.quiz_template').joinpath(*parts)
+    # The ability to pass multiple parts to joinpath was not added until
+    # Python 3.11
+    path = importlib.resources.files('plnq.quiz_template').joinpath(parts[0])
+    for part in parts[1:]:
+        path = path.joinpath(part)
+
     shutil.copy(path, destination)
 
 def copy_template_dir(destination, source):
