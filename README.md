@@ -10,7 +10,7 @@
    
 into a single `.ipynb` file. `plnq` then uses this data to generate a complete PrairieLearn question (including `info.json`, `question.html`, `server.py`, all `workspace` files and all `test` files.) 
 
-Using PrairieLearn terminology, `plnq` generates a single PrairieLearn question: a directory that you would place inside `questions`. This question can have as many parts (i.e., functions to write) as you want; but, from PrairieLearn's perspective it is a single "question".
+Using PrairieLearn terminology, `plnq` generates a single PrairieLearn _question_: a directory that you would place inside `questions`. This question can have as many parts (i.e., functions to write) as you want; but, from PrairieLearn's perspective it is a single "question".
 
 `plnq` assumes that 
   * a question is a sequence of tasks, where each task asks students to implement a well-defined function, and
@@ -38,14 +38,14 @@ The first block is a code block containing several dictionaries:
 
 `info` contains data placed in `info.json` including: `title`, `topics`, and `tags`
 ```
-plnq.info = {
+plnq_d.info = {
     "title": "Writing Functions",
     "topic": "functions",
     "tags": ["functions", "hw"]
 }
 ```
 
-This block may optionally contain code to set up a mock `plnq` object for use when debugging a template. See [Mocking plnq](#mocking-plnq) for details.
+The `plnq` script provides a data object named `plnq_d`. To allow the code blocks to run in a Jupyter environment when creating or editing the template (i.e., when there isn't a running `plnq` script to provide `plnq_d`), authors can create a mock `plnq_d` object. See [Mocking plnq](#mocking-plnq) for details.
 
 After the initial question-level metadata block, the remaining blocks describe the specific tasks. Each task requires two blocks 
   1. A Markdown block containing instructions, and 
@@ -69,7 +69,7 @@ Following each Markdown block, is a code block containing the solution to each t
  1. sanity-check the assignment (i.e., get the instructor to solve the problem to make sure it isn't more difficult than expected) and 
  2. verify that the expected answers for the examples and tests cases are correct.
 
-Call `plnq.add_function` to provide the additional metadata. The function takes the name of the function as the first 
+Call `plnq_d.add_function` to provide the additional metadata. The function takes the name of the function as the first 
 parameter, followed by several named parameters:
    * `desc`: The description that appears in list of functions that students are to write. Specifically, 
    this value is used to set up `names_from_user` in `server.py`. It is also necessary so that PrairieLearn will export the function to the auto-grader.
@@ -77,7 +77,7 @@ parameter, followed by several named parameters:
    * `test_cases`: Lists the cases run when the student clicks "Save and Grade". These are not shown to the user. 
  
 ```
-plnq.add_function('area_of_triangle', 
+plnq_d.add_function('area_of_triangle', 
     desc='A function that returns the area of a triangle given the lengths of its sides',
     displayed_examples=[
         [1, 1, 1, math.sqrt(3)/4],
@@ -103,6 +103,8 @@ By default, `plnq` simply uses `math.isclose` to compare floats and `==` to comp
 When comparing floats, `plnq` uses the default for `isclose` (`rel_tol=1e-9`). To specify a different tolerance, use a `FloatAnswer` for the expected value:
 
 ```
+from plnq.answer import FloatAnswer
+
 displayed_examples = {
     'final_value_monthly': [
         [100, 10, 0.05, FloatAnswer(15528.23, abs_tol=0.01)],
@@ -122,29 +124,28 @@ that contains other content you want to keep). Note: The code that searches for 
 
 ## Mocking `plnq`
 
-The `plnq` script passes an object named `plnq` into the notebook's global namespace. However, if an exercise author tries to run the notebook (e.g., to debug the 
-reference solution), code that references `plnq` will generate a `NameError`. There are 
+The `plnq` script passes an object named `plnq_d` into the notebook's global namespace. However, if an exercise author tries to run the notebook (e.g., to debug the reference solution), code that references `plnq_d` will generate a `NameError`. There are 
 two solutions to this:
   1. Put the reference solutions in a separate code block, and don't ever run code blocks
-     that reference `plnq`.
-  2. Add a line or two of code in the first block to conditionally set `plnq`. 
+     that reference `plnq_d`.
+  2. Add a line or two of code in the first block to conditionally set `plnq_d`. 
 
 Here are two possible options:
 
 Longer, but readable:
 
 ```
-if not 'plnq' in globals():  
+if not 'plnq_d' in globals():  
     import plnq_mock
-    plnq = plnq_mock.setup()
+    plnq_d = plnq_mock.setup()
 ```
 
 One line, but somewhat cryptic: 
 ```
-plnq = globals()['plnq'] if 'plnq' in globals() else __import__('plnq_mock').setup()
+plnq = globals()['plnq_d'] if 'plnq_d' in globals() else __import__('plnq_mock').setup()
 ```
 
-(To use the code above to mock `plnq`, the `plnq-gvsu` package must be installed in the jupyter environment's Python kernel.)
+(To use the code above to mock `plnq_d`, the `plnq-gvsu` package must be installed in the jupyter environment's Python kernel.)
 
 # Dev Install
 
