@@ -24,10 +24,10 @@ import types
 import math
 import importlib.resources
 
-from .answer import answer_types
+# from .answer import answer_types
 from .answer.answer import Answer
 
-PLNQ_VERSION = "2.0.0"
+PLNQ_VERSION = "2.0.1"
 
 def compare(item1, item2):
     if isinstance(item1, float):
@@ -256,10 +256,9 @@ def main():
 
     # Blocks run in their own namespace. We need to specifically inject
     # objects into that namespace, if desired.
-    plnq = PLNQData()
-    description = answer_types
-    description.update({"Answer": Answer, "plnq_description_folder": description_folder,
-                           'plnq': plnq, "config": {}})
+    plnq_d = PLNQData()
+    # I forget why I needed this: "plnq_description_folder": description_folder,
+    description = {'plnq_d': plnq_d, "config": {}}
     
     stdout_buffer = io.StringIO()
     original_stdout = sys.stdout
@@ -330,7 +329,7 @@ def main():
     # (without "do_not_overwrite") it assumes that this directory can 
     # be destroyed (e.g., when re-running plnq after updates)
     with open(f'{output_dir_name}/.plnq', "a", encoding="utf-8") as f:
-        f.write(f"Version: ${PLNQ_VERSION}\n")
+        f.write(f"Version: {PLNQ_VERSION}\n")
 
     #
     # info.json
@@ -340,9 +339,9 @@ def main():
     info_json["uuid"] = str(uuid.uuid4()) if args.uuid == None else args.uuid
 
     # TODO complain if expected info is missing.
-    info_json['title'] = plnq.info["title"]
-    info_json["topic"] = plnq.info["topic"]
-    info_json["tags"] =  plnq.info["tags"]
+    info_json['title'] = plnq_d.info["title"]
+    info_json["topic"] = plnq_d.info["topic"]
+    info_json["tags"] =  plnq_d.info["tags"]
 
     for file in other_graded_files:
         info_json['workspaceOptions']['gradedFiles'].append(file)
@@ -358,7 +357,7 @@ def main():
     question_file = open_template("question.html")
     question_file_contents = question_file.read()
     new_question_file_contents = question_file_contents.replace(
-        'zzDESCRIPTIONzz', plnq.info["title"])
+        'zzDESCRIPTIONzz', plnq_d.info["title"])
 
     output_question_file = open(f"{output_dir_name}/question.html", "w")
     output_question_file.write(new_question_file_contents)
@@ -373,7 +372,7 @@ def main():
 
     functions = [
         {"name": name, "description": data.description, "type": "function"}
-        for name, data in plnq.exported_functions.items()
+        for name, data in plnq_d.exported_functions.items()
     ]
 
     functions_json = json.dumps(functions, indent=2)
@@ -475,7 +474,7 @@ def main():
             print("(Make sure you have a complete signature, not just a name.)")
         function_name = possible_names[0]
 
-        displayed_examples = plnq.exported_functions[function_name].displayed_examples
+        displayed_examples = plnq_d.exported_functions[function_name].displayed_examples
 
         if len(displayed_examples) > 0:
             block_content += "\n\nFor example:\n"
@@ -526,7 +525,7 @@ def main():
     # test_code += f"\n  student_code_file = 'learning_target.ipynb'\n\n"
 
     i = 0
-    for func_name, function_desc in plnq.exported_functions.items():
+    for func_name, function_desc in plnq_d.exported_functions.items():
         all_tests = function_desc.displayed_examples + function_desc.test_cases
 
         cast = None
@@ -562,7 +561,7 @@ def main():
     #
     # Make sure the reference solution produces the same answer as the test cases!
 
-    for func_name, function_desc in plnq.exported_functions.items():
+    for func_name, function_desc in plnq_d.exported_functions.items():
         # print(f"------- {func_name} -------")
         if func_name not in description:
             print(f"WARNING: No reference solution for {func_name}")

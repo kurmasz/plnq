@@ -10,7 +10,7 @@
    
 into a single `.ipynb` file. `plnq` then uses this data to generate a complete PrairieLearn question (including `info.json`, `question.html`, `server.py`, all `workspace` files and all `test` files.) 
 
-Using PrairieLearn terminology, `plnq` generates a single question: a directory that you would place inside `questions`. This question can have as many parts (i.e., functions to write) as you want; but, from PrairieLearn's perspective it is a single "question".
+Using PrairieLearn terminology, `plnq` generates a single PrairieLearn question: a directory that you would place inside `questions`. This question can have as many parts (i.e., functions to write) as you want; but, from PrairieLearn's perspective it is a single "question".
 
 `plnq` assumes that 
   * a question is a sequence of tasks, where each task asks students to implement a well-defined function, and
@@ -44,6 +44,8 @@ plnq.info = {
     "tags": ["functions", "hw"]
 }
 ```
+
+This block may optionally contain code to set up a mock `plnq` object for use when debugging a template. See [Mocking plnq](#mocking-plnq) for details.
 
 After the initial question-level metadata block, the remaining blocks describe the specific tasks. Each task requires two blocks 
   1. A Markdown block containing instructions, and 
@@ -118,6 +120,31 @@ that contains other content you want to keep). Note: The code that searches for 
 
 `plnq` searches for exact matches to the ignore and pass-through markers. If a block is not being handled properly, double-check the capitalization and the number of exclamation marks. Also, using too many exclamation marks may result in stray characters in the output.
 
+## Mocking `plnq`
+
+The `plnq` script passes an object named `plnq` into the notebook's global namespace. However, if an exercise author tries to run the notebook (e.g., to debug the 
+reference solution), code that references `plnq` will generate a `NameError`. There are 
+two solutions to this:
+  1. Put the reference solutions in a separate code block, and don't ever run code blocks
+     that reference `plnq`.
+  2. Add a line or two of code in the first block to conditionally set `plnq`. 
+
+Here are two possible options:
+
+Longer, but readable:
+
+```
+if not 'plnq' in globals():  
+    import plnq_mock
+    plnq = plnq_mock.setup()
+```
+
+One line, but somewhat cryptic: 
+```
+plnq = globals()['plnq'] if 'plnq' in globals() else __import__('plnq_mock').setup()
+```
+
+(To use the code above to mock `plnq`, the `plnq-gvsu` package must be installed in the jupyter environment's Python kernel.)
 
 # Dev Install
 
@@ -139,6 +166,7 @@ To verify whether this package will still build and run under Python 3.9
 
 This will build a Docker image with Python 3.9, then run the automated tests.
 
+To build the package, run `python -m build`
 # Notes:
 
 * To use libraries inside the description block, put the `import` statement at the top of the description block.

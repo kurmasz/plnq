@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "plnq-gvsu"
-version = "2.0.0"
+version = "2.0.1"
 authors = [
   { name="Zachary Kurmas", email="kurmasz@gvsu.edu" },
 ]
@@ -25,10 +25,10 @@ license = "GPL-3.0-or-later"
 license-files = ["LICEN[CS]E*"]
 
 [tool.hatch.build.targets.sdist]
-include = ["plnq/**"]
+include = ["plnq/**", "plnq_mock/**"]
 
 [tool.hatch.build.targets.wheel]
-include = ["plnq/**"]
+include = ["plnq/**", "plnq_mock/**"]
 
 
 [project.urls]
