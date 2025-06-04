@@ -96,7 +96,7 @@ plnq_d.add_function('area_of_triangle',
 For `displayed_examples` and `test_cases` Each example/test case is a list where the first `n-1` values are parameters and the last value is the expected return value.
 
 
-### Comparing observed and expected values
+### Floating Point Answers
 
 By default, `plnq` simply uses `math.isclose` to compare floats and `==` to compare other values.
 
@@ -112,6 +112,47 @@ displayed_examples = {
     ]
 }
 ```
+
+### Mutator Functions
+
+A _mutator_ function modifies one or more of its parameters. For example, a function that takes a list as input and 
+replaces all of the negative values with 0 would be a mutator function.
+
+To set up tests for a mutator function, use an `InlineAnswer` object as the expected value:
+
+```
+from plnq.answer import InlineAnswer
+
+plnq_d.add_function('remove_suffixes', 
+  desc='A function to convert "+/-" grades into "straight" grades',
+  displayed_examples=[
+    [['A', 'A-', 'C+', 'D'], InlineAnswer(['A', 'A', 'C', 'D'])]
+  ],
+  test_cases=[
+    [['B+'], InlineAnswer(['B'])],
+    [['C'], InlineAnswer(['C'])],
+    [[], InlineAnswer([])]
+])
+```
+
+By default, `InlineAnswer` assumes the first parameter is the mutated parameter, and that the function will return `None`. However, both of these values can be specified:
+
+```
+from plnq.answer import InlineAnswer
+
+plnq_d.add_function('truncate_and_count', 
+  desc='Another function to adjust list values to remain in a given range',
+  displayed_examples=[
+    [0, 10, [1, 2, -3, 4, 5, 11, 12], InlineAnswer([1, 2, 0, 4, 5, 10, 10], param_index=2, expected_return_value=3)]
+  ],
+  test_cases=[
+    [3, 7, [2, 3, 4, 5, 6, 7, 8], InlineAnswer([3, 3, 4, 5, 6, 7, 7], param_index=2, expected_return_value=2)],
+    [6, 8, [1, 2, 0, 3], InlineAnswer([6, 6, 6, 6], param_index=2, expected_return_value=4)],
+])
+```
+
+Currently, `plnq` only supports the testing of one mutated parameter. 
+
 
 # Additional Configuration
 
