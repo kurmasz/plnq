@@ -14,7 +14,6 @@ import re
 import subprocess
 import plnq
 
-
 class SystemTestBase(unittest.TestCase):
 
     # PLNQ_VERSION_STRING = f'plnq v2.0.1'
@@ -26,9 +25,13 @@ class SystemTestBase(unittest.TestCase):
 
     input_directory = os.path.join(os.path.dirname(__file__), 'input')
 
-    # os.path.join did not add support for multiple components until Python 3.11
-    default_output = os.path.join(os.path.join(
-        os.path.dirname(__file__), 'output'), '-')
+    default_output_base = os.path.join(os.path.dirname(__file__), 'output')
+    default_output =os.path.join(default_output_base, '-')
+
+    @classmethod
+    def setUpClass(cls):
+        if not os.path.exists(cls.default_output_base):
+            os.makedirs(cls.default_output_base)    
 
     def input_file(self, filename):
         return os.path.join(self.input_directory, filename)

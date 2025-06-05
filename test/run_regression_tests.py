@@ -75,7 +75,12 @@ def get_uuid(assignment_directory):
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 
 current_dir_name = os.path.dirname(__file__)
-regression_base = f"{current_dir_name}/regression_tests"
+regression_base = os.path.join(current_dir_name, "regression_tests")
+observed_output_base = os.path.join(regression_base, 'observed_output')
+
+# Create the directory if it doesn't exist
+if not os.path.exists(observed_output_base):
+    os.makedirs(observed_output_base)    
 
 runner = [sys.executable, '-m', 'plnq.plnq'] # Run plnq from dev source
 if len(sys.argv) > 1:
