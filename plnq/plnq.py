@@ -24,7 +24,6 @@ import types
 import math
 import importlib.resources
 
-# from .answer import answer_types
 from .answer.answer import Answer
 
 PLNQ_VERSION = "2.0.1"
@@ -177,6 +176,7 @@ def main():
     #
     # Startup / argument parsing
     #
+    print(f"plnq v{PLNQ_VERSION}")
 
     parser = argparse.ArgumentParser(prog='plnq',
                                      description='Generates PrairieLearn questions')

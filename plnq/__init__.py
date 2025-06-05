@@ -1,0 +1,1 @@
+from .plnq import PLNQ_VERSION

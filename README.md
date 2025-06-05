@@ -18,7 +18,7 @@ Using PrairieLearn terminology, `plnq` generates a single PrairieLearn _question
 
 The result of running `plnq` is a complete notebook-based, auto-graded PrairieLearn question. You can modify this question (e.g., to add features not supported by `plnq`); however, be careful when doing this because running `plnq` again will overwrite these changes. (Or, if you avoid running `plnq` again, any oversights in the template will need to be fixed "by hand".)
 
-## Usage:
+## Usage
 
 Simply run `plnq name_of_template.ipynb name/of/output/directory`.
 
@@ -28,7 +28,13 @@ For example, from the root of this repository, run `plnq examples/simple_example
 * The output directory is optional and defaults to the name of the template without the `.ipynb` extension.
 * `plnq` is very paranoid about overwriting directories. That's by design. (I have nightmares about accidentally doing something dumb like `plnq new_question.ipynb ~`.)
 
-## Template configuration
+## Examples
+
+The [examples](./examples/) directory contains templates that highlight one specific feature.
+
+I have also shared some of the PrairieLearn questions/assignments I've [actually used in my course](https://us.prairielearn.com/pl/public/course_instance/184291/assessments). From this page, you can copy the assignment and work through the assignment as a student would. In addition, if you click on the `Files` tab when viewing the question, you can view or download the template `.ipynb` file used to create the question.
+
+## Template Configuration Documentation
 
 A template is just an `.ipynb` file. 
 

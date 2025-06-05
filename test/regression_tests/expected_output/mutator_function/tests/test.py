@@ -98,7 +98,7 @@ class Test(PLTestCaseWithPlot):
   @points(1)
   @name("test 12: truncate_and_count")
   def test_12(self):
-      self.verify('truncate_and_count', answer.InlineAnswer(expected=[3, 3, 4, 5, 6, 7, 7],expected_return_value=12,param_index=2), '[3, 7, [2, 3, 4, 5, 6, 7, 8]]', 2, None)
+      self.verify('truncate_and_count', answer.InlineAnswer(expected=[3, 3, 4, 5, 6, 7, 7],expected_return_value=2,param_index=2), '[3, 7, [2, 3, 4, 5, 6, 7, 8]]', 2, None)
 
   @points(1)
   @name("test 13: truncate_and_count")
