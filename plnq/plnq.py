@@ -172,6 +172,9 @@ class PLNQData:
 ##############################################################################
 
 def main():
+
+    found_test_error = False
+
     #
     # Startup / argument parsing
     #
