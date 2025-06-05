@@ -93,7 +93,6 @@ def copy_template(destination, *parts):
 
 def copy_template_dir(destination, source):
     path = importlib.resources.files('plnq.quiz_template').joinpath(source)
-    print(f"Copying {path} to {destination}")
     shutil.copytree(path, destination, dirs_exist_ok=True)
 
 ##############################################################################
@@ -196,7 +195,6 @@ def main():
 
     description_loc = args.description[0]
     output_dir_name = args.output_dir
-    template_dir_name = os.path.dirname(__file__) + "/quiz_template"
 
     if (not os.path.exists(description_loc)):
         print(f"Input '{description_loc}' doesn't exist.")
@@ -237,9 +235,9 @@ def main():
         sys.exit(1)
 
     # TODO Make sure file exists, is a file, and is readable, or complain and quit.
-    print(f"Making quiz question from {description_file_name}")
-    print(f"Placing output in {output_dir_name}")
-    print(f"Template files located {template_dir_name}")
+    if args.verbose:
+        print(f"Using template: {description_file_name}")
+        print(f"Placing output in {output_dir_name}")
 
     other_graded_files = []
     if location_is_dir:
@@ -599,7 +597,8 @@ def main():
                     print(f"!!! Test {index} {func_name}({test[0]}): {verifier.message()}")
                 else:
                     print(f"!!! Test {index} ({func_name}): {verifier.message()}")
-                print(f"    {test}")
+                if args.verbose:
+                    print(f"    {test}")
 
         # Restore original cwd
         os.chdir(original_cwd)

@@ -1,5 +1,6 @@
 /tmp*
-tests/regression_tests/observed_output
+test/regression_tests/observed_output
+test/system_tests/output
 examples/output
 *~
 __pycache__
