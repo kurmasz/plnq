@@ -17,7 +17,8 @@ class TestCaseVerificationTest(system_test_base.SystemTestBase):
     INCONSISTENT_TEST_CASES = 'Found inconsistent test cases.'
 
     def test_incorrect_expected_output(self):
-        result = self.run_plnq('simple_example_loop_incorrect_expected_output.ipynb', expect_empty_stderr=False)
+        result = self.run_plnq(
+            'simple_example_loop_incorrect_expected_output.ipynb', expect_empty_stderr=False)
 
         self.assertEqual(3, result.returncode)
         self.assertEqual(self.INCONSISTENT_TEST_CASES, result.stderr.strip())
@@ -29,16 +30,31 @@ class TestCaseVerificationTest(system_test_base.SystemTestBase):
         self.assertEqual(expected_output, result.stdout_lst)
 
     def test_incorrect_mutation(self):
-        result = self.run_plnq('mutator_function_with_incorrect_expected_mutation.ipynb', expect_empty_stderr=False)
+        result = self.run_plnq(
+            'mutator_function_with_incorrect_expected_mutation.ipynb', expect_empty_stderr=False)
 
         self.assertEqual(3, result.returncode)
         self.assertEqual(self.INCONSISTENT_TEST_CASES, result.stderr.strip())
 
         expected_output = [
-           "!!! Test 0 remove_suffixes(['A', 'A', 'C', 'D']): Expected \"['A', 'A', 'C+', 'D']\", but received \"['A', 'A', 'C', 'D']\"",
-           "!!! Test 3 remove_suffixes([]): Expected \"['C']\", but received \"[]\""
+            """!!! Test 0 remove_suffixes(['A', 'A', 'C', 'D']): Expected the first parameter to be modified to "['A', 'A', 'C+', 'D']", but was "['A', 'A', 'C', 'D']\"""",
+            """!!! Test 3 remove_suffixes([]): Expected the first parameter to be modified to "['C']", but was "[]\""""
         ]
         self.assertEqual(expected_output, result.stdout_lst)
+
+    def test_mutator_with_incorrect_return(self):
+        result = self.run_plnq(
+            'mutator_function_with_incorrect_expected_return.ipynb', expect_empty_stderr=False)
+
+        self.assertEqual(3, result.returncode)
+        self.assertEqual(self.INCONSISTENT_TEST_CASES, result.stderr.strip())
+
+        expected_output = [
+            '''!!! Test 0 (truncate_and_count)(0, ...) return value: Expected "2", but received "3"''',
+            '''!!! Test 3 (truncate_and_count)(6, ...) return value: Expected object of type <class 'NoneType'>, but received <class 'int'> 4'''
+        ]
+        self.assertEqual(expected_output, result.stdout_lst)
+
 
 if __name__ == '__main__':
     import unittest

@@ -12,12 +12,8 @@
 from . import Answer    
 
 class InlineAnswer(Answer):
-    def __init__(self, expected, expected_return_value=None, param_index=0):
-        super().__init__(expected, strict=True, param_index=param_index)
-        self.expected_return_value = expected_return_value
-
-    def display_expected_string(self):
-      ordinals = {
+    
+    ordinals = {
         0: 'first',
         1: 'second',
         2: 'third',
@@ -27,6 +23,24 @@ class InlineAnswer(Answer):
         6: 'seventh',
         7: 'eighth'
       }
-      ordinal = ordinals[self.param_index] if self.param_index <= 4 else f'{self.param_index}th'
+
+    def __init__(self, expected, expected_return_value=None, param_index=0):
+        super().__init__(expected, strict=True, param_index=param_index)
+        self.expected_return_value = expected_return_value
+
+    def ordinal_parameter(self):
+      return self.ordinals[self.param_index] if self.param_index <= 4 else f'{self.param_index}th'
+
+    def display_expected_string(self):
+      ordinal = self.ordinal_parameter()
       return f'modify the {ordinal} parameter to be `{self.display_expected_value()}`'
 
+    def verify_value(self, observed):
+        ordinal = self.ordinal_parameter()
+        if self.expected == observed:
+            return True
+        if type(self.expected == str) or type(observed) == str:
+            self.message_content = f'Expected the {ordinal} parameter to be modified to "{self.expected}", but was "{observed}"'
+        else:
+            self.message_content = f'Expected the {ordinal} parameter to be modified to {self.expected}, but was {observed}'
+        return False

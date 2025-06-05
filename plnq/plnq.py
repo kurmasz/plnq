@@ -591,8 +591,10 @@ def main():
 
             if verifier.param_index == -1:
                 computed_answer = return_value
+                secondary_verifier = None
             else:
                 computed_answer = test[verifier.param_index]
+                secondary_verifier = Answer.make(verifier.expected_return_value)
 
             # print(f"{test[:num_params]} --- {computed_answer}")
             if (not verifier.verify(computed_answer)):
@@ -600,9 +602,20 @@ def main():
                 if (num_params == 1):
                     print(f"!!! Test {index} {func_name}({test[0]}): {verifier.message()}")
                 else:
-                    print(f"!!! Test {index} ({func_name}): {verifier.message()}")
+                    print(f"!!! Test {index} ({func_name})({test[0]}, ...): {verifier.message()}")
                 if args.verbose:
                     print(f"    {test}")
+
+            # When using InlineAnswer, also check the actual return value.
+            if secondary_verifier and not secondary_verifier.verify(return_value):
+                found_test_error = True
+                if (num_params == 1):
+                    print(f"!!! Test {index} {func_name}({test[0]}) return value: {secondary_verifier.message()}")
+                else:
+                    print(f"!!! Test {index} ({func_name})({test[0]}, ...) return value: {secondary_verifier.message()}")
+                if args.verbose:
+                    print(f"    {test}")
+
 
         # Restore original cwd
         os.chdir(original_cwd)
