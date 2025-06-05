@@ -2,7 +2,7 @@
 #
 # plnq --- PrairieLearn Notebook Quiz
 #
-# plnq generates a complete autograded, notebook-based PrairieLearn question
+# plnq generates a complete auto-graded, notebook-based PrairieLearn question
 # using only configuration information contained in a single .ipynb file.
 #
 # (c) 2023-2025 Anna Carvalho and Zachary Kurmas
@@ -197,7 +197,7 @@ def main():
     output_dir_name = args.output_dir
 
     if (not os.path.exists(description_loc)):
-        print(f"Input '{description_loc}' doesn't exist.")
+        print(f"Input '{description_loc}' doesn't exist.", file=sys.stderr, flush=True)
         exit(1)
 
     location_is_dir = os.path.isdir(description_loc)
@@ -303,22 +303,22 @@ def main():
         destroy_existing_target(output_dir_name)
     elif (Path(output_dir_name)).exists():
 
-        print(f"Output path {output_dir_name} exists. Do you want to")
-        print("  (Q) quit")
-        print("  (D) destroy the current directory and replace it with the newly generated question")
-        print("  (M) move the current directory to a backup location")
+        print(f"Output path {output_dir_name} exists. Do you want to", file=sys.stderr)
+        print("  (Q) quit", file=sys.stderr)
+        print("  (D) destroy the current directory and replace it with the newly generated question", file=sys.stderr)
+        print("  (M) move the current directory to a backup location", file=sys.stderr, flush=True)
 
         choice = input().upper()
         if choice.startswith('Q'):
-            print('Good bye')
-            exit(0)
+            print('Good bye', file=sys.stderr, flush=True)
+            exit(2)
         elif choice.startswith('D'):
             destroy_existing_target(output_dir_name)
         elif choice.startswith('M'):
-            print("Not implemented yet.")
+            print("Not implemented yet.", file=sys.stderr, flush=True)
             exit(1)
         else:
-            print(f"Don't recognize option '{choice}'")
+            print(f"Don't recognize option '{choice}'", file=sys.stderr, flush=True)
             exit(1)
 
     Path(output_dir_name).mkdir(parents=False, exist_ok=False)

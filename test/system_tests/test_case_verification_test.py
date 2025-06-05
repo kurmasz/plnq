@@ -16,7 +16,7 @@ class TestCaseVerificationTest(system_test_base.SystemTestBase):
 
     def test_incorrect_expected_output(self):
         input_file = self.input_file(
-            'simple_example_loop_incorrect_test.ipynb')
+            'simple_example_loop_incorrect_expected_output.ipynb')
         result = self.run_plnq(['--destroy', input_file, self.default_output])
 
         self.assertEqual(0, result.returncode)

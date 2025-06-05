@@ -43,7 +43,7 @@ A template is just an `.ipynb` file.
 The first block is a code block containing several dictionaries:
 
 `info` contains data placed in `info.json` including: `title`, `topics`, and `tags`
-```
+```python
 plnq_d.info = {
     "title": "Writing Functions",
     "topic": "functions",
@@ -63,7 +63,7 @@ For the most part, the Markdown block simply contains the text the students read
 
 **Important:** This block should contain the function's signature delineated with `!!!`. (`plnq` uses this to build the sample input/output.)
 
-```
+```markdown
 # Task 1
 
 Write a function !!!`area_of_triangle(a, b, c)`!!! That uses [Heron's Formula](https://en.wikipedia.org/wiki/Heron%27s_formula) to calculate the area of the triangle with side lengths `a`, `b`, and `c`
@@ -82,7 +82,7 @@ parameter, followed by several named parameters:
    * `displayed_examples`: Lists the input and expected output for examples that are displayed to the user. 
    * `test_cases`: Lists the cases run when the student clicks "Save and Grade". These are not shown to the user. 
  
-```
+```python
 plnq_d.add_function('area_of_triangle', 
     desc='A function that returns the area of a triangle given the lengths of its sides',
     displayed_examples=[
@@ -108,7 +108,7 @@ By default, `plnq` simply uses `math.isclose` to compare floats and `==` to comp
 
 When comparing floats, `plnq` uses the default for `isclose` (`rel_tol=1e-9`). To specify a different tolerance, use a `FloatAnswer` for the expected value:
 
-```
+```python
 from plnq.answer import FloatAnswer
 
 displayed_examples = {
@@ -126,7 +126,7 @@ replaces all of the negative values with 0 would be a mutator function.
 
 To set up tests for a mutator function, use an `InlineAnswer` object as the expected value:
 
-```
+```python
 from plnq.answer import InlineAnswer
 
 plnq_d.add_function('remove_suffixes', 
@@ -143,7 +143,7 @@ plnq_d.add_function('remove_suffixes',
 
 By default, `InlineAnswer` assumes the first parameter is the mutated parameter, and that the function will return `None`. However, both of these values can be specified:
 
-```
+```python
 from plnq.answer import InlineAnswer
 
 plnq_d.add_function('truncate_and_count', 
@@ -181,18 +181,39 @@ Here are two possible options:
 
 Longer, but readable:
 
-```
+```python
 if not 'plnq_d' in globals():  
     import plnq_mock
     plnq_d = plnq_mock.setup()
 ```
 
 One line, but somewhat cryptic: 
-```
+```python
 plnq = globals()['plnq_d'] if 'plnq_d' in globals() else __import__('plnq_mock').setup()
 ```
 
 (To use the code above to mock `plnq_d`, the `plnq-gvsu` package must be installed in the jupyter environment's Python kernel.)
+
+## Implicitly Handled Errors
+
+There are some errors that are handled implicitly by the Python runtime (as opposed to having `plnq`
+explicitly check for the error condition). These errors will result in a Python runtime error:
+
+  * Incorrect number/type of parameters in a test case.  If this happens, you will see output similar to this:
+
+      ```
+      Traceback (most recent call last):
+        File "<frozen runpy>", line 198, in _run_module_as_main
+        File "<frozen runpy>", line 88, in _run_code
+        File "/Users/kurmasz/Documents/Code/plnq/plnq/__main__.py", line 5, in <module>
+          main()
+          ~~~~^^
+        File "/Users/kurmasz/Documents/Code/plnq/plnq/plnq.py", line 587, in main
+          return_value = cast(reference_function(*test[:num_params]))
+                              ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+      TypeError: letters_in_string() missing 1 required positional argument: 'phrase'
+      ```
+
 
 # Dev Install
 
