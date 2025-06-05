@@ -40,6 +40,11 @@ class SystemTestBase(unittest.TestCase):
     # IMPORTANT: stdout_lst does not contain the version string
     #
     def run_plnq(self, parameters, expect_empty_stderr=True):
+
+        if type(parameters) == str:
+            input_file = self.input_file(parameters)
+            parameters = ['--destroy', input_file, self.default_output]
+
         result = subprocess.run([sys.executable, '-m', 'plnq'] + parameters,
                                 # env={**os.environ, 'PYTHONPATH': project_root},
                                 cwd=self.project_root,

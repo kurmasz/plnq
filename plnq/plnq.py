@@ -593,6 +593,7 @@ def main():
 
             # print(f"{test[:num_params]} --- {computed_answer}")
             if (not verifier.verify(computed_answer)):
+                found_test_error = True
                 if (num_params == 1):
                     print(f"!!! Test {index} {func_name}({test[0]}): {verifier.message()}")
                 else:
@@ -602,7 +603,13 @@ def main():
 
         # Restore original cwd
         os.chdir(original_cwd)
-    exit(0)
+
+    if found_test_error:
+        sys.stdout.flush()
+        print("Found inconsistent test cases.", file=sys.stderr, flush=True)
+        exit(3)
+    else:
+        exit(0)
 
 
 if __name__ == '__main__':

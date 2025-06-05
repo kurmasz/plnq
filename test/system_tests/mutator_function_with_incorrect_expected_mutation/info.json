@@ -1,0 +1,27 @@
+{
+  "uuid": "e5610598-3406-453c-ba55-fc5b08e1a2b7",
+  "title": "Mutating Lists",
+  "topic": "lists",
+  "tags": [
+    "list",
+    "hw"
+  ],
+  "type": "v3",
+  "singleVariant": true,
+  "gradingMethod": "External",
+  "workspaceOptions": {
+    "image": "prairielearn/workspace-jupyterlab-python",
+    "port": 8080,
+    "home": "/home/jovyan",
+    "rewriteUrl": false,
+    "gradedFiles": [
+      "learning_target.ipynb"
+    ]
+  },
+  "externalGradingOptions": {
+    "enabled": true,
+    "image": "prairielearn/grader-python",
+    "entrypoint": "/python_autograder/run.sh",
+    "timeout": 20
+  }
+}
