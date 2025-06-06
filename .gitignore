@@ -13,7 +13,9 @@ dist/
 *.egg
 .eggs/
 venv/
+venv_test/
 .venv/
+.venv_test/
 
 
 

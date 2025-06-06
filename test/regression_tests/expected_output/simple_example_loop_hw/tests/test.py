@@ -1,7 +1,7 @@
 
 from pl_helpers import name, points, not_repeated
 from code_feedback import Feedback
-from pl_unit_test import PLTestCaseWithPlot, PLTestCase
+from pl_unit_test import PLTestCase
 import json
 
 # These imports are needed because the test generation code from the template may use them.
@@ -11,7 +11,7 @@ import re
 
 import answer
 
-class Test(PLTestCaseWithPlot):
+class Test(PLTestCase):
     
   def verify(self, function_name, expected, params_json, param_index=-1, cast=None):
     original_params = json.loads(params_json)

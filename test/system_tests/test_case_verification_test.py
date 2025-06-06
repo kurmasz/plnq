@@ -8,9 +8,7 @@
 #
 ###############################################################################
 
-
 import system_test_base
-
 
 class TestCaseVerificationTest(system_test_base.SystemTestBase):
 
