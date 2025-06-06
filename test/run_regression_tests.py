@@ -48,13 +48,17 @@ def are_dirs_same(dir1, dir2):
     compared = dircmp(dir1, dir2)
     if (compared.left_only or compared.right_only or compared.diff_files 
         or compared.funny_files):
-        
-        print("Only in dir1:", compared.left_only)
-        print("Only in dir2:", compared.right_only)
-        print("Differing files:", compared.diff_files)
-        print("Uncomparable files:", compared.funny_files)
-
+        if compared.left_only:
+            print("   Only in dir1:", compared.left_only)
+        if compared.right_only:
+            print("   Only in dir2:", compared.right_only)
+        if compared.diff_files:
+            print("   Differing files:", compared.diff_files)
+            print(f"   diff {dir1}/{compared.diff_files[0]} {dir2}/{compared.diff_files[0]}")
+        if compared.funny_files:
+            print("   Non-comparable files:", compared.funny_files)
         return False
+    
     for subdir in compared.common_dirs:
         if not are_dirs_same(os.path.join(dir1, subdir), os.path.join(dir2, subdir)):
             return False
@@ -93,7 +97,7 @@ def run_regression_test(name):
     prefix = os.path.commonprefix([regression_base, name])
     short_name = f".{name[len(prefix):]}"
 
-    print(f"Testing {short_name} .... ", end='')
+    print(f"Testing {short_name} .... ")
 
     parts = re.findall(r"\/([^\/]+).ipynb$", name)
     basename = parts[0]
@@ -111,7 +115,7 @@ def run_regression_test(name):
         print(f"Fail with return value {result.returncode}")
         print(result.stderr)
         print(result.stdout)
-    elif  are_dirs_same(expected_output_dir, observed_output_dir):
+    elif are_dirs_same(expected_output_dir, observed_output_dir):
         print("Success.")
     else:
         print("Fail. Output directories differ")
