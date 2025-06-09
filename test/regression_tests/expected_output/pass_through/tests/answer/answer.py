@@ -19,6 +19,9 @@ class Answer:
     def display_expected_value(self):
         return self.expected
     
+    # Used to generate the example markdown.
+    # The backticks are used so that the answer appears in a code font.
+    # Strings are not put in quotes because the backticks are sufficient to delineate the string.
     def display_expected_string(self):
         return f'return `{self.display_expected_value()}`'
 

@@ -8,7 +8,6 @@
 #
 ###############################################################################
 
-
 import unittest
 from plnq.answer import FloatAnswer 
 

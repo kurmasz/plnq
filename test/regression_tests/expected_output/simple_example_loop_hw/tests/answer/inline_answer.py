@@ -29,7 +29,7 @@ class InlineAnswer(Answer):
         self.expected_return_value = expected_return_value
 
     def ordinal_parameter(self):
-      return self.ordinals[self.param_index] if self.param_index <= 4 else f'{self.param_index}th'
+      return self.ordinals[self.param_index] if self.param_index <= 7 else f'{self.param_index -1}th'
 
     def display_expected_string(self):
       ordinal = self.ordinal_parameter()
@@ -39,7 +39,7 @@ class InlineAnswer(Answer):
         ordinal = self.ordinal_parameter()
         if self.expected == observed:
             return True
-        expq = '"' if isinstance(self.expected, str) else ''
-        obsq = '"' if isinstance(observed, str) else ''
-        self.message_content = f'Expected the {ordinal} parameter to be modified to {expq}{self.expected}{expq}, but was {obsq}{observed}{obsq}.'
+        exp_q = '"' if isinstance(self.expected, str) else ''
+        obs_q = '"' if isinstance(observed, str) else ''
+        self.message_content = f'Expected the {ordinal} parameter to be modified to {exp_q}{self.expected}{exp_q}, but was {obs_q}{observed}{obs_q}.'
         return False
