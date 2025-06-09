@@ -19,22 +19,24 @@ class Answer:
     def display_expected_value(self):
         return self.expected
     
+    # Used to generate the example markdown.
+    # The backticks are used so that the answer appears in a code font.
+    # Strings are not put in quotes because the backticks are sufficient to delineate the string.
     def display_expected_string(self):
         return f'return `{self.display_expected_value()}`'
 
     def verify_type(self, observed):
         if type(self.expected) != type(observed):
-            self.message_content = f'Expected object of type {type(self.expected)}, but received {type(observed)} {observed}'
+            self.message_content = f'Expected object of type {type(self.expected)}, but received {type(observed)} {observed}.'
             return False
         return True
 
     def verify_value(self, observed):
         if self.expected == observed:
             return True
-        if type(self.expected == str) or type(observed) == str:
-            self.message_content = f'Expected "{self.expected}", but received "{observed}"'
-        else:
-            self.message_content = f'Expected {self.expected}, but received {observed}'
+        ex_q = '"' if isinstance(self.expected, str) else ''
+        ob_q = '"' if isinstance(observed, str) else ''
+        self.message_content = f'Expected {ex_q}{self.expected}{ex_q}, but received {ob_q}{observed}{ob_q}.'
         return False
 
     def verify(self, observed):
@@ -65,6 +67,7 @@ class Answer:
     def constructor_string(self, package='answer'):
         param_strings = []
         for name, param in inspect.signature(self.__init__).parameters.items():
+            # TODO: I don't remember why I needed this check for POSITIONAL_OR_KEYWORD
             if not param.kind == inspect.Parameter.POSITIONAL_OR_KEYWORD:
                 print("ERROR: Can only handle parameters that are POSITIONAL_OR_KEYWORD")
             value = getattr(self, param.name)

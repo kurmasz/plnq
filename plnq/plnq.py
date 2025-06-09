@@ -26,7 +26,7 @@ import importlib.resources
 
 from .answer.answer import Answer
 
-PLNQ_VERSION = "2.0.1"
+PLNQ_VERSION = "2.0.2"
 
 def compare(item1, item2):
     if isinstance(item1, float):

@@ -11,7 +11,7 @@
 
 import system_test_base
 
-class TestCommandLine(system_test_base.SystemTestBase):
+class CommandLineTest(system_test_base.SystemTestBase):
 
     def test_no_parameters(self):
         result = self.run_plnq([], expect_empty_stderr=False)
@@ -24,9 +24,10 @@ class TestCommandLine(system_test_base.SystemTestBase):
         self.assertEqual([], result.stdout_lst)
 
     def test_no_such_file(self):
-        result = self.run_plnq(['no_such_file.ipynb'])
+        result = self.run_plnq(['no_such_file.ipynb'], expect_empty_stderr=False)
         self.assertEqual(1, result.returncode)
-        self.assertEqual(f"Input 'no_such_file.ipynb' doesn't exist.", result.stdout_lst[0])
+        self.assertEqual(f"Input 'no_such_file.ipynb' doesn't exist.", result.stderr.strip())
+        self.assertEqual([], result.stdout_lst)
 
 #
 # How to test where output goes?
