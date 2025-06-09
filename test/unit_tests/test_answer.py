@@ -84,34 +84,42 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify_type("string"))
         self.assertEqual(
             answer.message_content, 
-            'Expected object of type <class \'int\'>, but received <class \'str\'> string'
+            'Expected object of type <class \'int\'>, but received <class \'str\'> string.'
         )
 
         answer = Answer(expected="test")
         self.assertFalse(answer.verify_type(42))
         self.assertEqual(
             answer.message_content, 
-            'Expected object of type <class \'str\'>, but received <class \'int\'> 42'
+            'Expected object of type <class \'str\'>, but received <class \'int\'> 42.'
         )
 
         answer = Answer(expected=[1, 2, 3])
         self.assertFalse(answer.verify_type((4, 5, 6)))  # List vs tuple
         self.assertEqual(
             answer.message_content, 
-            'Expected object of type <class \'list\'>, but received <class \'tuple\'> (4, 5, 6)'
+            'Expected object of type <class \'list\'>, but received <class \'tuple\'> (4, 5, 6).'
         )
 
     # This method checks exact type. Thus, checking an instance
     # of a subclass will fail. I don't believe that this failure is 
     # important to the operation of plnq; but, I include the test case
     # here to document the existing behavior.
-    def test_verify_type_parent_and_child(self):       
+    #
+    # ?P<mod> is a named capture group.
+    # ?P=mod is a backreference to the capture group named mod.
+
+    def test_verify_type_parent_and_child(self):
         answer = Answer(expected=Animal())
         self.assertFalse(answer.verify_type(Dog()))
-        self.assertEqual(
-            answer.message_content, 
-            'Expected object of type <class \'__main__.Animal\'>, but received <class \'__main__.Dog\'> I am a dog'
+
+        pattern = (
+            r"Expected object of type <class '(?P<mod>[\w\.]+)\.Animal'>, "
+            r"but received <class '(?P=mod)\.Dog'> I am a dog."
         )
+        self.assertRegex(answer.message_content, pattern)
+
+
 
     def test_verify_type_unexpected_None(self):
         # Test when observed is None
@@ -119,7 +127,7 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify_type(None))
         self.assertEqual(
             answer.message_content, 
-            'Expected object of type <class \'int\'>, but received <class \'NoneType\'> None'
+            'Expected object of type <class \'int\'>, but received <class \'NoneType\'> None.'
         )
 
     def test_verify_type_unexpected_non_None(self):
@@ -128,7 +136,7 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify_type(42))
         self.assertEqual(
             answer.message_content, 
-            'Expected object of type <class \'NoneType\'>, but received <class \'int\'> 42'
+            'Expected object of type <class \'NoneType\'>, but received <class \'int\'> 42.'
         )
 
 
@@ -156,7 +164,7 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify_value(100))
         self.assertEqual(
             answer.message_content,
-            'Expected 42, but received 100'
+            'Expected 42, but received 100.'
         )
 
     def test_verify_value_non_matching_strings(self):
@@ -164,7 +172,7 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify_value("different"))
         self.assertEqual(
             answer.message_content,
-            'Expected "test", but received "different"'
+            'Expected "test", but received "different".'
         )
 
     def test_verify_value_non_matching_lists(self):
@@ -172,7 +180,7 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify_value([4, 5, 6]))  # Different lists
         self.assertEqual(
             answer.message_content,
-            'Expected [1, 2, 3], but received [4, 5, 6]'
+            'Expected [1, 2, 3], but received [4, 5, 6].'
         )
 
     def test_verify_value_string_vs_non_string(self):
@@ -181,7 +189,7 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify_value(42))
         self.assertEqual(
             answer.message_content,
-            'Expected "42", but received 42'
+            'Expected "42", but received 42.'
         )
 
     def test_verify_value_non_string_vs_string(self):
@@ -189,7 +197,7 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify_value("42"))
         self.assertEqual(
             answer.message_content,
-            'Expected 42, but received "42"'
+            'Expected 42, but received "42".'
         )
 
     #
@@ -207,7 +215,7 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify("42"))  # Type mismatch
         self.assertEqual(
             answer.message_content,
-            'Expected object of type <class \'int\'>, but received <class \'str\'> 42'
+            'Expected object of type <class \'int\'>, but received <class \'str\'> 42.'
         )
 
     def test_verify_strict_mode_value_mismatch(self):
@@ -216,7 +224,7 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify(100))  # Value mismatch
         self.assertEqual(
             answer.message_content,
-            'Expected 42, but received 100'
+            'Expected 42, but received 100.'
         )
 
     def test_verify_non_strict_mode_type_mismatch(self):
@@ -225,7 +233,7 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify("42"))  # Type mismatch but should only care about value
         self.assertEqual(
             answer.message_content,
-            'Expected 42, but received "42"'
+            'Expected 42, but received "42".'
         )
 
     def test_verify_non_strict_mode_value_match(self):
@@ -239,7 +247,7 @@ class AnswerTest(unittest.TestCase):
         self.assertFalse(answer.verify(100))  # Value mismatch
         self.assertEqual(
             answer.message_content,
-            'Expected 42, but received 100'
+            'Expected 42, but received 100.'
         )
 
     #

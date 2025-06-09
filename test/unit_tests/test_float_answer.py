@@ -30,7 +30,8 @@ class TestFloatAnswer(unittest.TestCase):
         self.assertFalse(answer.strict)
 
     def test_verify_value_within_tolerance(self):
-        # Test when observed is within tolerance
+        # Test when observed is within specified tolerance
+        # (but not within the default tolerance)
         answer = FloatAnswer(expected=3.14, rel_tol=1e-05, abs_tol=1e-05)
         self.assertTrue(answer.verify_value(3.1400001))
 
@@ -43,7 +44,7 @@ class TestFloatAnswer(unittest.TestCase):
         self.assertFalse(answer.verify_value(3.15))
         self.assertEqual(answer.message_content, 'Expected 3.14, but received 3.15')
 
-        answer = FloatAnswer(expected=3.14, rel_tol=0.01)
+        answer = FloatAnswer(expected=3.14, rel_tol=0.005)
         self.assertFalse(answer.verify_value(3.12))  # Outside 1% tolerance
         self.assertEqual(answer.message_content, 'Expected 3.14, but received 3.12')
 

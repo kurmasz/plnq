@@ -24,18 +24,18 @@ class ReAnswer(Answer):
 
     def verify_type(self, observed):
         if type(observed) != str:
-            self.message_content = f'Expected object of type {type("str")}, but received {type(observed)} {observed}'
+            self.message_content = f'Expected a string, but received {type(observed)} {observed}'
             return False
         return True
 
     def verify_value(self, observed):
         if self.expected.search(observed):
             return True
-        self.message_content = f'Expected {observed} to match {self.expected}'
+        self.message_content = f'Expected {observed} to match /{self.display_expected_value()}/'
         return False
     
     def display_expected_value(self):
         if self.alt_answer != None:
             return self.alt_answer
         else:
-            return super().display_expected_value()
+            return self.expected.pattern

@@ -39,8 +39,7 @@ class InlineAnswer(Answer):
         ordinal = self.ordinal_parameter()
         if self.expected == observed:
             return True
-        if type(self.expected == str) or type(observed) == str:
-            self.message_content = f'Expected the {ordinal} parameter to be modified to "{self.expected}", but was "{observed}"'
-        else:
-            self.message_content = f'Expected the {ordinal} parameter to be modified to {self.expected}, but was {observed}'
+        expq = '"' if isinstance(self.expected, str) else ''
+        obsq = '"' if isinstance(observed, str) else ''
+        self.message_content = f'Expected the {ordinal} parameter to be modified to {expq}{self.expected}{expq}, but was {obsq}{observed}{obsq}.'
         return False

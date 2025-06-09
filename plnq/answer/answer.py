@@ -24,7 +24,7 @@ class Answer:
 
     def verify_type(self, observed):
         if type(self.expected) != type(observed):
-            self.message_content = f'Expected object of type {type(self.expected)}, but received {type(observed)} {observed}'
+            self.message_content = f'Expected object of type {type(self.expected)}, but received {type(observed)} {observed}.'
             return False
         return True
 
@@ -33,7 +33,7 @@ class Answer:
             return True
         ex_q = '"' if isinstance(self.expected, str) else ''
         ob_q = '"' if isinstance(observed, str) else ''
-        self.message_content = f'Expected {ex_q}{self.expected}{ex_q}, but received {ob_q}{observed}{ob_q}'
+        self.message_content = f'Expected {ex_q}{self.expected}{ex_q}, but received {ob_q}{observed}{ob_q}.'
         return False
 
     def verify(self, observed):
