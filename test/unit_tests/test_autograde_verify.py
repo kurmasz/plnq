@@ -10,6 +10,7 @@
 import unittest
 import os
 import sys
+from unittest.mock import patch, MagicMock
 
 # Since we don't know the cwd of the process that will run this test, we need to
 # dynamically add the path to the generated directory where the mock_pl module is located.
@@ -100,11 +101,8 @@ class TestVerifyTest(unittest.TestCase):
         def the_cast(x):
             nonlocal cast_param
             cast_param = x
-
-        StudentCode.two_x_plus_y_called = False
-        StudentCode.three_x_minus_y_called = False
-        StudentCode.return_hello_called = False
-
+            return x
+        
         the_test.verify(
             function_name='three_x_minus_y',
             expected=8,
@@ -113,6 +111,26 @@ class TestVerifyTest(unittest.TestCase):
         )
 
         self.assertEqual(cast_param, 8)
+
+
+    @patch('answer.Answer.make')
+    def test_answer_make_called_with_expected(self, mock_make):
+
+        # Mock Answer instance and its verify method
+        mock_answer_instance = MagicMock()
+        mock_answer_instance.verify.return_value = True
+        mock_make.return_value = mock_answer_instance
+
+        the_test = Test()
+        the_test.st = StudentCode()
+
+        expected_value = 42
+        the_test.verify('three_x_minus_y', expected_value, '[10,8]')
+
+        # Assert
+        mock_make.assert_called_once_with(expected_value)
+
+
 
 
 if __name__ == '__main__':
