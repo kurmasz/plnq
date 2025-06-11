@@ -1,6 +1,6 @@
 ###############################################################################
 #
-# test_plnq_test.py
+# test_autograde_verify.py
 #
 # Unit tests for Test#verify from the Workbook's test.py
 #
@@ -51,15 +51,24 @@ class StudentCode:
 
 class TestVerifyTest(unittest.TestCase):
 
-    def test_verify_calls_named_function(self):
-        the_test = Test()
-        the_test.st = StudentCode()
+    def setUp(self):
+        Feedback.score = -999
+        Feedback.message = None
 
+        # Reset static variables in StudentCode
         StudentCode.two_x_plus_y_called = False
         StudentCode.three_x_minus_y_called = False
         StudentCode.return_hello_called = False
+        StudentCode.x_parm = -999
+        StudentCode.y_parm = -777
 
-        the_test.verify(
+        self.the_test = Test()
+        self.the_test.st = StudentCode()
+
+
+    def test_verify_calls_named_function(self):
+
+        self.the_test.verify(
             function_name='two_x_plus_y',
             expected=17,
             params_json='[5, 7]',
@@ -73,14 +82,8 @@ class TestVerifyTest(unittest.TestCase):
         self.assertEqual(StudentCode.y_parm, 7)
 
     def test_verify_calls_named_function_with_no_params(self):
-        the_test = Test()
-        the_test.st = StudentCode()
 
-        StudentCode.two_x_plus_y_called = False
-        StudentCode.three_x_minus_y_called = False
-        StudentCode.return_hello_called = False
-
-        the_test.verify(
+        self.the_test.verify(
             function_name='return_hello',
             expected='hello',
             params_json='[]',
@@ -93,8 +96,6 @@ class TestVerifyTest(unittest.TestCase):
         self.assertEqual(StudentCode.y_parm, -777)
 
     def test_call_cast_if_not_None(self):
-        the_test = Test()
-        the_test.st = StudentCode()
 
         cast_param = None
 
@@ -103,7 +104,7 @@ class TestVerifyTest(unittest.TestCase):
             cast_param = x
             return x
         
-        the_test.verify(
+        self.the_test.verify(
             function_name='three_x_minus_y',
             expected=8,
             params_json='[5, 7]',
@@ -121,16 +122,99 @@ class TestVerifyTest(unittest.TestCase):
         mock_answer_instance.verify.return_value = True
         mock_make.return_value = mock_answer_instance
 
-        the_test = Test()
-        the_test.st = StudentCode()
-
         expected_value = 42
-        the_test.verify('three_x_minus_y', expected_value, '[10,8]')
+        self.the_test.verify('three_x_minus_y', expected_value, '[10,8]')
 
         # Assert
         mock_make.assert_called_once_with(expected_value)
 
+    @patch('answer.Answer.make')
+    def test_answer_calls_verify_with_return_value_by_default(self, mock_make):
+        # Mock Answer instance and its verify method
+        mock_verifier = MagicMock()
+        mock_verifier.verify.return_value = True
+        mock_make.return_value = mock_verifier
 
+        expected_value = 42
+        self.the_test.verify('three_x_minus_y', expected_value, '[10,8]', param_index=-1)
+
+        # Assert
+        mock_verifier.verify.assert_called_once_with(22)
+
+    @patch('answer.Answer.make')
+    def test_answer_calls_verify_with_return_value_by_default(self, mock_make):
+        # Mock Answer instance and its verify method
+        mock_verifier = MagicMock()
+        mock_verifier.verify.return_value = True
+        mock_make.return_value = mock_verifier
+
+
+        expected_value = 42
+        self.the_test.verify('three_x_minus_y', expected_value, '[10,8]')
+
+        # Assert
+        mock_verifier.verify.assert_called_once_with(22)
+
+    @patch('answer.Answer.make')
+    def test_answer_calls_verify_with_return_value_by_when_param_index_neg1(self, mock_make):
+        # Mock Answer instance and its verify method
+        mock_verifier = MagicMock()
+        mock_verifier.verify.return_value = True
+        mock_make.return_value = mock_verifier
+
+        expected_value = 42
+        self.the_test.verify('three_x_minus_y', expected_value, '[15,12]', param_index=-1)
+
+        # Assert
+        mock_verifier.verify.assert_called_once_with(33)
+
+    @patch('answer.Answer.make')
+    def test_answer_calls_verify_with_return_value_by_when_given_param_index0(self, mock_make):
+        # Mock Answer instance and its verify method
+        mock_verifier = MagicMock()
+        mock_verifier.verify.return_value = True
+        mock_make.return_value = mock_verifier
+
+        expected_value = 42
+        self.the_test.verify('three_x_minus_y', expected_value, '[15,12]', param_index=0)
+
+        # Assert
+        mock_verifier.verify.assert_called_once_with(15)
+
+
+    @patch('answer.Answer.make')
+    def test_answer_calls_verify_with_return_value_by_when_given_param_index1(self, mock_make):
+        # Mock Answer instance and its verify method
+        mock_verifier = MagicMock()
+        mock_verifier.verify.return_value = True
+        mock_make.return_value = mock_verifier
+
+        expected_value = 42
+        self.the_test.verify('three_x_minus_y', expected_value, '[15,12]', param_index=1)
+
+        # Assert
+        mock_verifier.verify.assert_called_once_with(12)
+
+    def test_score_set_to_1_when_verifier_passes(self):
+
+        expected_value = 33
+        self.the_test.verify('three_x_minus_y', expected_value, '[15,12]')
+
+        self.assertEqual(Feedback.score, 1)
+
+    def test_score_set_to_0_when_verifier_fails(self):
+
+        expected_value = 32 # not the correct answer
+        self.the_test.verify('three_x_minus_y', expected_value, '[15,12]')
+
+        self.assertEqual(Feedback.score, 0)
+
+    def test_feedback_added_when_verifier_fails(self):
+
+        expected_value = 32 # not the correct answer
+        self.the_test.verify('three_x_minus_y', expected_value, '[15,12]')
+
+        self.assertEqual(Feedback.message, "three_x_minus_y(15,12): Expected 32, but received 33.")
 
 
 if __name__ == '__main__':
