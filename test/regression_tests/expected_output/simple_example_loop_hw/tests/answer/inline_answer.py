@@ -5,6 +5,9 @@
 # Allows the answer to a PLNQ question to be a modified parameter rather 
 # than a return value.
 #
+# IMPORTANT: expected_return_value is not used by InlineAnswer. For inline tests, 
+# the expected return value is tested when main plnq script creates separate calls 
+# to Test#verify for the modified parameter and the return value. 
 # (c) 2023-2025 Anna Carvalho and Zachary Kurmas
 #
 ###############################################################################

@@ -4,6 +4,11 @@
 #
 # Integration tests for Test#verify from the Workbook's test.py
 #
+# IMPORTANT: expected_return_value is not used by InlineAnswer.verify, so it
+# is not used in these tests. For inline tests, the expected return value is 
+# tested because the main plnq script creates separate calls to Test#verify 
+# for the modified parameter and the return value. 
+#
 # (c) 2025 Zachary Kurmas
 #
 ###############################################################################
@@ -310,43 +315,7 @@ class TestVerifyTest(unittest.TestCase):
         self.assertIsNotNone(Feedback.message)
         self.assertEqual("sum_lists([1, 2, 3], 3, [10, 12, 13]): Expected the third parameter to be modified to [13, 18, 22], but was [10, 12, 13].", Feedback.message)
 
-    #
-    # Modified but wrong return value.
-    #
-    def test_two_ints_modify_second_list_with_return_passes(self):
-        self.the_test.verify(
-            function_name='increment_second_with_return',
-            expected=InlineAnswer(expected=[34, 38, 42], expected_return_value=42, param_index=2),
-            params_json='[3, [10, 11, 12], [4, 5, 6]]',
-            param_index=2
-        )
-        self.assertEqual(Feedback.score, 1)
-        self.assertIsNone(Feedback.message)
-
-    def test_two_ints_modify_second_list_with_return_incorrect_return_type(self):
-        self.the_test.verify(
-            function_name='increment_second_with_return',
-            expected=InlineAnswer(expected=[7, 11, 15], expected_return_value='Good Morning', param_index=2), # Note: An int is expected, not a string.
-            params_json='[3, [1, 2, 3], [4, 5, 6]]',
-            param_index=2
-        )
-        self.assertEqual(Feedback.score, 0)
-        self.assertIsNotNone(Feedback.message)
-        self.assertEqual("increment_second_with_return(3, [1, 2, 3], [4, 5, 6]): Expected object of type <class 'str'>, but received <class 'int'> 42.", Feedback.message)
-
-    def test_two_ints_modify_second_list_with_return_incorrect_return_value(self):
-        self.the_test.verify(
-            function_name='increment_second_with_return',
-
-            # Note: This is not the correct answer, but it will generate the desired message
-            expected=InlineAnswer(expected=[7, 11, 15], expected_return_value=43, param_index=2), # Note: An int is expected, not a string.
-            params_json='[3, [1, 2, 3], [4, 5, 6]]',
-            param_index=2
-        )
-        self.assertEqual(Feedback.score, 0)
-        self.assertIsNotNone(Feedback.message)
-        self.assertEqual("increment_second_with_return(3, [1, 2, 3], [4, 5, 6]): Expected return value to be 43, but was 42.", Feedback.message)
-
+    
         
 if __name__ == '__main__':
     unittest.main()
