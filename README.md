@@ -165,7 +165,7 @@ Currently, `plnq` only supports the testing of one mutated parameter.
 * To ignore a Markdown block (i.e., not include it in the resulting question), add the string `!!!PLNQ.Ignore!!!` anywhere in the block. See `examples/ignore_blocks.ipynb`. By default, code blocks are not passed through to the workspace, so there is no need to explicitly ignore them.  
 * To pass a Markdown block through to the generated workspace unchanged, add the string `!!!PLNQ.PassThrough!!!` anywhere in the block. See `examples/pass_through.ipynb`. The default behavior is that Markdown blocks are scanned for a function signature, and a list of example inputs and outputs is added. If a block contains neither a pass-through marker nor a function signature, `plnq` will complain.
 * To pass a Code block through to the generated workspace, add a comment containing `!!!PLNQ.PassThrough!!!` anywhere in the block. This comment will not be included in the generated workspace (so don't put the pass-through marker in a comment that
-that contains other content you want to keep). Note: The code that searches for the pass-through marker is not sophisticated. Don't put the pass-through marker on the same line as a literal string containing a `#`.
+that contains other content you want to keep). Note: The code that searches for the pass-through marker is not sophisticated. Don't put the pass-through marker on the same line as a literal string containing a `#`. Also, code as pass through won't be executed.
 
 `plnq` searches for exact matches to the ignore and pass-through markers. If a block is not being handled properly, double-check the capitalization and the number of exclamation marks. Also, using too many exclamation marks may result in stray characters in the output.
 
