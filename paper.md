@@ -40,7 +40,9 @@ The GitHub repository contains both
 * A set of [examples](https://github.com/kurmasz/plnq/tree/main/examples) illustrating each major feature, and
 * [Complete documentation](https://github.com/kurmasz/plnq/blob/main/README.md).
 
-In addition, I have shared the PrairieLearn assignment I created using `PLNQ` for my Python course. You can browse them [here](https://us.prairielearn.com/pl/public/course_instance/184291/assessments).
+In addition, 
+* I have shared the PrairieLearn assignment I created using `PLNQ` for my Python course. You can browse them [here](https://us.prairielearn.com/pl/public/course_instance/184291/assessments).
+* You can also watch a [video](https://youtu.be/avWnrxCU6C0?si=HD41qngdzYdxBVhS) that explains my motivation for creating `PLNQ`, then walks through the different components of a template notebook as well as the execution of `PLNQ` to produce a working PrairieLearn question.
 
 ## Statement of Need:
 
