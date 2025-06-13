@@ -166,6 +166,11 @@ Currently, `plnq` only supports the testing of one mutated parameter.
 * To pass a Markdown block through to the generated workspace unchanged, add the string `!!!PLNQ.PassThrough!!!` anywhere in the block. See `examples/pass_through.ipynb`. The default behavior is that Markdown blocks are scanned for a function signature, and a list of example inputs and outputs is added. If a block contains neither a pass-through marker nor a function signature, `plnq` will complain.
 * To pass a Code block through to the generated workspace, add a comment containing `!!!PLNQ.PassThrough!!!` anywhere in the block. This comment will not be included in the generated workspace (so don't put the pass-through marker in a comment that
 that contains other content you want to keep). Note: The code that searches for the pass-through marker is not sophisticated. Don't put the pass-through marker on the same line as a literal string containing a `#`. Also, code as pass through won't be executed.
+* `add_function` takes an optional `cast` parameter that is the name of a type. Adding this parameter will cast the output of the function under test to the requested type. This is useful if a function might return a different, but reasonable, type than the expected answer.  For example:
+   * When testing regular expressions, the actual return type of `re.search` is either `NoneType` or `re.Match`; however, it is easier to specify the expected return type as `bool`.  (Also, some students may 
+   explicitly return `True` or `False` rather than simply returning the result of `re.search`.)
+   * If a student uses certain libraries, a function that auspiciously returns a `float` may actually return 
+     a related type like `numpy.float32`.
 
 `plnq` searches for exact matches to the ignore and pass-through markers. If a block is not being handled properly, double-check the capitalization and the number of exclamation marks. Also, using too many exclamation marks may result in stray characters in the output.
 
