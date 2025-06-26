@@ -1,0 +1,27 @@
+{
+  "uuid": "16dfbcc9-bf16-49a6-a368-09610014b4af",
+  "title": "Regular Expression Matching",
+  "topic": "regex",
+  "tags": [
+    "regex",
+    "hw"
+  ],
+  "type": "v3",
+  "singleVariant": true,
+  "gradingMethod": "External",
+  "workspaceOptions": {
+    "image": "prairielearn/workspace-jupyterlab-python",
+    "port": 8080,
+    "home": "/home/jovyan",
+    "rewriteUrl": false,
+    "gradedFiles": [
+      "learning_target.ipynb"
+    ]
+  },
+  "externalGradingOptions": {
+    "enabled": true,
+    "image": "prairielearn/grader-python",
+    "entrypoint": "/python_autograder/run.sh",
+    "timeout": 20
+  }
+}
