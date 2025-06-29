@@ -35,19 +35,11 @@ PLNQ_PASS_THROUGH_MARKER = f'!!!{PLNQ_PASS_THROUGH}!!!'
 PLNQ_IGNORE = 'PLNQ.Ignore'
 PLNQ_IGNORE_MARKER = f"!!!{PLNQ_IGNORE}!!!"
 
-def compare(item1, item2):
-    if isinstance(item1, float):
-        print(f"{item1} -- {item2} -- {item2 - item1}")
-        return math.isclose(item1, item2)
-    else:
-        return item1 == item2
-
 # Here is an idea:When you refer to the template files,
 # Assume the template directory is in the same directory
 # as this file. That way the setup can be run from anywhere.
 
 # https://docs.python.org/3/library/argparse.html
-
 
 def is_directory_protected(directory):
     protected_file_path = os.path.join(directory, "do_not_overwrite")
@@ -58,7 +50,6 @@ def is_directory_protected(directory):
 # directory is mis-typed (e.g., if the parent directory is listed
 # instead of the desired target), we verify that the target directory
 # contains a file named .plnq
-
 
 def destroy_existing_target(directory):
     path = Path(directory)

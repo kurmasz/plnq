@@ -1,0 +1,50 @@
+Alabama: 5073187
+Alaska: 733583
+Arizona: 7278717
+Arkansas: 3050880
+California: 39029342
+Colorado: 5839926
+Connecticut: 3626205
+Delaware: 1018396
+Florida: 22694118
+Georgia: 10711908
+Hawaii: 1441553
+Idaho: 1920562
+Illinois: 12582032
+Indiana: 6849473
+Iowa: 3198988
+Kansas: 2937402
+Kentucky: 4512310
+Louisiana: 4590241
+Maine: 1385340
+Maryland: 6201473
+Massachusetts: 7182970
+Michigan: 10013558
+Minnesota: 5779661
+Mississippi: 2936323
+Missouri: 6190538
+Montana: 1146632
+Nebraska: 1989389
+Nevada: 3254055
+New Hampshire: 1402538
+New Jersey: 9267130
+New Mexico: 2113344
+New York: 19677151
+North Carolina: 10852983
+North Dakota: 779261
+Ohio: 11780017
+Oklahoma: 4000953
+Oregon: 4325290
+Pennsylvania: 12964056
+Rhode Island: 1093734
+South Carolina: 5385218
+South Dakota: 920687
+Tennessee: 7051339
+Texas: 30345487
+Utah: 3460316
+Vermont: 653988
+Virginia: 8642274
+Washington: 7785786
+West Virginia: 1764517
+Wisconsin: 5908416
+Wyoming: 581381

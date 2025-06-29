@@ -65,6 +65,8 @@ def are_dirs_same(dir1, dir2):
     return True
 
 def get_uuid(assignment_directory):
+    if not os.path.exists(assignment_directory):
+        raise FileNotFoundError(f"Expected output directory '{assignment_directory}' does not exist.")
     with open(f"{assignment_directory}/info.json") as file:
         data = json.load(file)
         return data['uuid']
@@ -97,10 +99,13 @@ def run_regression_test(name):
     prefix = os.path.commonprefix([regression_base, name])
     short_name = f".{name[len(prefix):]}"
 
-    print(f"Testing {short_name} .... ")
+    print(f"Testing {short_name} .... ", end='')
 
-    parts = re.findall(r"\/([^\/]+).ipynb$", name)
-    basename = parts[0]
+    if name.endswith('.ipynb'):
+        parts = re.findall(r"\/([^\/]+).ipynb$", name)
+        basename = parts[0]
+    else:
+        basename = os.path.basename(name)
 
     observed_output_dir = f"{regression_base}/observed_output/{basename}"
     expected_output_dir = f"{regression_base}/expected_output/{basename}"
@@ -112,7 +117,7 @@ def run_regression_test(name):
                             env={**os.environ, 'PYTHONPATH': project_root},
                             capture_output=True, text=True)
     if result.returncode != 0:
-        print(f"Fail with return value {result.returncode}")
+        print(f"\nFail with return value {result.returncode}")
         print(result.stderr)
         print(result.stdout)
     elif are_dirs_same(expected_output_dir, observed_output_dir):
@@ -122,5 +127,6 @@ def run_regression_test(name):
        
    
 regression_inputs = glob.glob(f"{current_dir_name}/regression_tests/input/*.ipynb")
+regression_inputs.append(f"{current_dir_name}/regression_tests/input/workspace_with_data_files")
 for test_input in regression_inputs:
     run_regression_test(test_input)

@@ -1,0 +1,30 @@
+{
+  "uuid": "57fee050-885d-4359-8ada-c2fc5a16c8c4",
+  "title": "Reading Files",
+  "topic": "functions",
+  "tags": [
+    "files",
+    "hw"
+  ],
+  "type": "v3",
+  "singleVariant": true,
+  "gradingMethod": "External",
+  "workspaceOptions": {
+    "image": "prairielearn/workspace-jupyterlab-python",
+    "port": 8080,
+    "home": "/home/jovyan",
+    "rewriteUrl": false,
+    "gradedFiles": [
+      "learning_target.ipynb",
+      "states.txt",
+      "europe_capitals.txt",
+      "canada.txt"
+    ]
+  },
+  "externalGradingOptions": {
+    "enabled": true,
+    "image": "prairielearn/grader-python",
+    "entrypoint": "/python_autograder/run.sh",
+    "timeout": 20
+  }
+}
