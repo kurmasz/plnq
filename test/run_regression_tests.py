@@ -93,7 +93,71 @@ if len(sys.argv) > 1:
     runner = [sys.argv[1]] # Run a specific executable script.
 print(f"Using {runner}")
 
+from pathlib import Path
+from typing import Union
+
+
+def handle_symlink_in_windows(filepath: Union[str, Path]) -> bool:
+    """
+    Return True iff *filepath* is a text file that
+
+    1. contains **exactly one non‑empty line** (ignoring a trailing newline),
+    2. whose contents, after trimming surrounding whitespace, form a
+       valid path to a file, and
+    3. that target file **exists and is readable** by the current process.
+
+    Parameters
+    ----------
+    filepath : str | pathlib.Path
+        Path to the file you want to inspect.
+
+    Examples
+    --------
+    >>> # Suppose `link.txt` contains only "/usr/share/dict/words\\n"
+    >>> is_single_line_path("link.txt")
+    True
+    >>> is_single_line_path("empty.txt")     # empty file
+    False
+    >>> is_single_line_path("two_lines.txt") # more than one line
+    False
+    """
+    p = Path(filepath)
+
+    # Must exist, be a regular file, and be readable.
+    if not (p.is_file() and os.access(p, os.R_OK)):
+        return False
+
+    # Read the file *once* without loading more than one line.
+    with p.open("r", encoding="utf‑8", errors="replace") as f:
+        first_line = f.readline()
+        remainder   = f.readline()  # Empty string only if no second line
+
+    # Reject if there are zero or >1 lines (non‑empty remainder)
+    # or if the lone line is just whitespace.
+    candidate = first_line.rstrip("\n\r")
+    if not candidate.strip() or remainder:
+        return False
+
+    target = (Path(filepath).resolve().parent / candidate).resolve()
+
+    # target = Path(candidate.strip()).expanduser()
+    print(f"Target: {target}")
+    print(target.is_file())
+    print(os.R_OK)
+
+    # Must be an existing readable file (not dir, symlink is OK).
+    if target.is_file() and os.access(target, os.R_OK):
+        return target
+    else:
+        return filepath
+
+
 def run_regression_test(name):
+
+    print(f"Old Name: {name}")
+    name = handle_symlink_in_windows(name)
+    print(f"New Name: {name}")
+
 
     # Remove the redundant common prefix
     prefix = os.path.commonprefix([regression_base, name])
