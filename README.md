@@ -20,7 +20,9 @@ The result of running `plnq` is a complete notebook-based, auto-graded PrairieLe
 
 ## Usage
 
-Simply run `plnq name_of_template.ipynb name/of/output/directory`.
+If you haven't yet, install the `plnq-gvsu` package from [PyPI](https://pypi.org/project/plnq-gvsu/) (`pip install plnq-gvsu`).
+
+Once installed, simply run `plnq name_of_template.ipynb name/of/output/directory`.
 
 For example, from the root of this repository, run `plnq examples/simple_example_loop_hw.ipynb loc/of/pl/repo/questions/plnq_example`. Your chosen PrairieLearn course will now have a new question named `plnq_example`.
 
