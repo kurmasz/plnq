@@ -19,11 +19,11 @@ generated_dir = os.path.abspath(os.path.join(
 sys.path.insert(0, generated_dir)
 
 generated_dir2 = os.path.abspath(os.path.join(os.path.dirname(
-    __file__), '..', '..', 'plnq', 'quiz_template', 'tests'))
+    __file__), '..', '..', 'plnq'))
 sys.path.insert(0, generated_dir2)
 
 from code_feedback import Feedback
-from test import Test
+from quiz_template.tests.test import Test
 
 class StudentCode:
 

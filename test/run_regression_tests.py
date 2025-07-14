@@ -88,7 +88,7 @@ observed_output_base = os.path.join(regression_base, 'observed_output')
 if not os.path.exists(observed_output_base):
     os.makedirs(observed_output_base)    
 
-runner = [sys.executable, '-m', 'plnq.plnq'] # Run plnq from dev source
+runner = [sys.executable, '-m', 'plnq'] # Run plnq from dev source
 if len(sys.argv) > 1:
     runner = [sys.argv[1]] # Run a specific executable script.
 print(f"Using {runner}")
@@ -116,6 +116,7 @@ def run_regression_test(name):
     result = subprocess.run(runner + ["--destroy", "--uuid", uuid, name, observed_output_dir], 
                             env={**os.environ, 'PYTHONPATH': project_root},
                             capture_output=True, text=True)
+    print(result.stderr)
     if result.returncode != 0:
         print(f"\nFail with return value {result.returncode}")
         print(result.stderr)

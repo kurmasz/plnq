@@ -553,6 +553,10 @@ def main():
 
     Path(f"{output_dir_name}/tests").mkdir(parents=False, exist_ok=False)
     copy_template_dir(f'{output_dir_name}/tests', 'tests')
+    # tests should contain the answer module. But, Windows doesn't support symlinks,
+    # so we need to copy it separately. 
+    path = importlib.resources.files('plnq.answer')
+    shutil.copytree(path, f'{output_dir_name}/tests/answer', dirs_exist_ok=True)
 
     test_code_template_file = open_template(f"tests", "test.py")
     test_code = test_code_template_file.read()
