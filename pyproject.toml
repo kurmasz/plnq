@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "plnq-gvsu"
-version = "2.0.2"
+version = "2.0.3"
 authors = [
   { name="Zachary Kurmas", email="kurmasz@gvsu.edu" },
 ]
@@ -37,3 +37,12 @@ Issues = "https://github.com/kurmasz/plnq/issues"
 
 [project.scripts]
 plnq = "plnq.plnq:main"
+
+
+# Instructions for updating PyPI:
+# 1. Update version in plnq.py
+# 2. Update the .plnq files in expected_output
+# 3. Update the version in this file.
+# 4. Run python -m build
+# 5. Run twine check dist/*
+# 6. Run twine upload dist/*
