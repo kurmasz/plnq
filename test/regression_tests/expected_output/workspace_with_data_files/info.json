@@ -15,10 +15,10 @@
     "home": "/home/jovyan",
     "rewriteUrl": false,
     "gradedFiles": [
-      "learning_target.ipynb",
-      "states.txt",
+      "canada.txt",
       "europe_capitals.txt",
-      "canada.txt"
+      "learning_target.ipynb",
+      "states.txt"
     ]
   },
   "externalGradingOptions": {

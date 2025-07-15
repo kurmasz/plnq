@@ -377,6 +377,11 @@ def main():
 
     for file in other_graded_files:
         info_json['workspaceOptions']['gradedFiles'].append(file)
+    
+    # This is not important for the overall operation of plnq, 
+    # it just ensures that the resulting info.json file is identical 
+    # on both Windows and Mac for purposes of regression testing.
+    info_json['workspaceOptions']['gradedFiles'].sort()
 
     output_json_file = open(f"{output_dir_name}/info.json", "w")
     json.dump(info_json, output_json_file, indent=2)

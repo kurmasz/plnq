@@ -141,14 +141,8 @@ def handle_symlink_in_windows(filepath: Union[str, Path]) -> bool:
 
 def run_regression_test(name):
 
-    print(f"Old Name: {name}")
     name = handle_symlink_in_windows(name)
-    print(f"New Name: {name}")
-
-
     filename, basename = (p := Path(name)).name, p.stem
-    print(f"{filename} --- {basename}")
-
     print(f"Testing {filename} .... ", end='')
 
     observed_output_dir = f"{regression_base}/observed_output/{basename}"
@@ -160,7 +154,6 @@ def run_regression_test(name):
     result = subprocess.run(runner + ["--destroy", "--uuid", uuid, name, observed_output_dir], 
                             env={**os.environ, 'PYTHONPATH': project_root},
                             capture_output=True, text=True)
-    print(result.stderr)
     if result.returncode != 0:
         print(f"\nFail with return value {result.returncode}")
         print(result.stderr)
