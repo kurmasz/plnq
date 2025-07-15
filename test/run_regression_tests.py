@@ -99,9 +99,9 @@ from typing import Union
 
 def handle_symlink_in_windows(filepath: Union[str, Path]) -> bool:
     """
-    Return True iff *filepath* is a text file that
+    Return symlink "target" iff *filepath* is a text file that
 
-    1. contains **exactly one non‑empty line** (ignoring a trailing newline),
+    1. contains **exactly one non-empty line** (ignoring a trailing newline),
     2. whose contents, after trimming surrounding whitespace, form a
        valid path to a file, and
     3. that target file **exists and is readable** by the current process.
@@ -110,22 +110,14 @@ def handle_symlink_in_windows(filepath: Union[str, Path]) -> bool:
     ----------
     filepath : str | pathlib.Path
         Path to the file you want to inspect.
-
-    Examples
-    --------
-    >>> # Suppose `link.txt` contains only "/usr/share/dict/words\\n"
-    >>> is_single_line_path("link.txt")
-    True
-    >>> is_single_line_path("empty.txt")     # empty file
-    False
-    >>> is_single_line_path("two_lines.txt") # more than one line
-    False
     """
     p = Path(filepath)
+    if p.is_dir():
+        return filepath
 
     # Must exist, be a regular file, and be readable.
     if not (p.is_file() and os.access(p, os.R_OK)):
-        return False
+        raise ValueError(f"Parameter {filepath} is not a readable, regular file.")
 
     # Read the file *once* without loading more than one line.
     with p.open("r", encoding="utf‑8", errors="replace") as f:
@@ -136,17 +128,12 @@ def handle_symlink_in_windows(filepath: Union[str, Path]) -> bool:
     # or if the lone line is just whitespace.
     candidate = first_line.rstrip("\n\r")
     if not candidate.strip() or remainder:
-        return False
+        return filepath
 
     target = (Path(filepath).resolve().parent / candidate).resolve()
 
-    # target = Path(candidate.strip()).expanduser()
-    print(f"Target: {target}")
-    print(target.is_file())
-    print(os.R_OK)
-
     # Must be an existing readable file (not dir, symlink is OK).
-    if target.is_file() and os.access(target, os.R_OK):
+    if (target.is_file() or target.is_dir()) and os.access(target, os.R_OK):
         return target
     else:
         return filepath
@@ -159,17 +146,10 @@ def run_regression_test(name):
     print(f"New Name: {name}")
 
 
-    # Remove the redundant common prefix
-    prefix = os.path.commonprefix([regression_base, name])
-    short_name = f".{name[len(prefix):]}"
+    filename, basename = (p := Path(name)).name, p.stem
+    print(f"{filename} --- {basename}")
 
-    print(f"Testing {short_name} .... ", end='')
-
-    if name.endswith('.ipynb'):
-        parts = re.findall(r"\/([^\/]+).ipynb$", name)
-        basename = parts[0]
-    else:
-        basename = os.path.basename(name)
+    print(f"Testing {filename} .... ", end='')
 
     observed_output_dir = f"{regression_base}/observed_output/{basename}"
     expected_output_dir = f"{regression_base}/expected_output/{basename}"
